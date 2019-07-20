@@ -28,7 +28,35 @@ $ brew cask install docker vagrant virtualbox
 $ vagrant plugin install vagrant-hostmanager --plugin-version 1.8.9
 ```
 
-## Create VM and Initialize Docker Swarm
+## Short version
+
+Create VM: 
+
+```
+$ vagrant up
+```
+
+Initialize Docker Swarm:
+
+```
+$ ./initialize-swarm.sh
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+sr9cxlye7h4pgm2a0r2aujrc1 *   infra01             Ready               Active              Leader              18.09.8
+4ae6vhc5gcukzk3g8hkon1znd     infra02             Ready               Active                                  18.09.8
+```
+
+First deployment:
+
+```
+$ ./sentry/first-deployment.sh
+```
+
+Go to http://infra01.example.com:9000/auth/login/sentry/ (`admin@example.com` / `password`)
+
+
+## Long version
+
+### Create VM and Initialize Docker Swarm
 
 ```
 $ vagrant up
@@ -74,7 +102,7 @@ tldrnrw81ydp9p17klsppfrxy *   infra01             Ready               Active    
 485qf00sd1bvdxo634hef3pgt     infra02             Ready               Active                                  18.09.8
 ```
 
-## Deploy Sentry
+### Deploy Sentry
 
 First load `DOCKER_HOST` variable env to avoid to use `docker -H...`:
 
