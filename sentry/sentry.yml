@@ -4,6 +4,7 @@ x-sentry-environment:
   SENTRY_REDIS_HOST: redis
   SENTRY_POSTGRES_HOST: postgres
   SENTRY_DB_USER: sentry
+  SENTRY_DB_NAME: sentry
   SENTRY_DB_PASSWORD: sentry
   # Generate this secret with "docker run --rm sentry:9.0.0 sentry config generate-secret-key"
   SENTRY_SECRET_KEY: "ZDFvdmcjZnZob2lzbC01cWQpd2ZnM2owcjErLW44Kz1AbmNpaz10YzFkQF5AOHpmazMK"

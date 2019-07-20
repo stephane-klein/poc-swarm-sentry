@@ -24,7 +24,7 @@ do
     sleep 1
 done
 
-docker exec -it $(./sentry-container-id.sh) sentry upgrade
+docker exec -it $(./sentry-container-id.sh) sentry upgrade --noinput
 
 docker exec -it $(./sentry-container-id.sh) sentry createuser \
     --email admin@example.com \
