@@ -368,6 +368,39 @@ ALTER SEQUENCE public.django_site_id_seq OWNED BY public.django_site.id;
 
 
 --
+-- Name: jira_ac_tenant; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jira_ac_tenant (
+    id bigint NOT NULL,
+    organization_id bigint,
+    client_key character varying(50) NOT NULL,
+    secret character varying(100) NOT NULL,
+    base_url character varying(60) NOT NULL,
+    public_key character varying(250) NOT NULL
+);
+
+
+--
+-- Name: jira_ac_tenant_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.jira_ac_tenant_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: jira_ac_tenant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.jira_ac_tenant_id_seq OWNED BY public.jira_ac_tenant.id;
+
+
+--
 -- Name: nodestore_node; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2489,6 +2522,88 @@ CREATE SEQUENCE public.sentry_grouptombstone_id_seq
 --
 
 ALTER SEQUENCE public.sentry_grouptombstone_id_seq OWNED BY public.sentry_grouptombstone.id;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sentry_hipchat_ac_tenant (
+    id character varying(40) NOT NULL,
+    room_id character varying(40) NOT NULL,
+    room_name character varying(200),
+    room_owner_id character varying(40),
+    room_owner_name character varying(200),
+    secret character varying(120) NOT NULL,
+    homepage character varying(250) NOT NULL,
+    token_url character varying(250) NOT NULL,
+    capabilities_url character varying(250) NOT NULL,
+    api_base_url character varying(250) NOT NULL,
+    installed_from character varying(250) NOT NULL,
+    auth_user_id integer
+);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sentry_hipchat_ac_tenant_organizations (
+    id integer NOT NULL,
+    tenant_id character varying(40) NOT NULL,
+    organization_id bigint NOT NULL
+);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sentry_hipchat_ac_tenant_organizations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sentry_hipchat_ac_tenant_organizations_id_seq OWNED BY public.sentry_hipchat_ac_tenant_organizations.id;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sentry_hipchat_ac_tenant_projects (
+    id integer NOT NULL,
+    tenant_id character varying(40) NOT NULL,
+    project_id bigint NOT NULL
+);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sentry_hipchat_ac_tenant_projects_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sentry_hipchat_ac_tenant_projects_id_seq OWNED BY public.sentry_hipchat_ac_tenant_projects.id;
 
 
 --
@@ -5309,6 +5424,13 @@ ALTER TABLE ONLY public.django_site ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: jira_ac_tenant id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jira_ac_tenant ALTER COLUMN id SET DEFAULT nextval('public.jira_ac_tenant_id_seq'::regclass);
+
+
+--
 -- Name: sentry_activity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5726,6 +5848,20 @@ ALTER TABLE ONLY public.sentry_grouptagkey ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY public.sentry_grouptombstone ALTER COLUMN id SET DEFAULT nextval('public.sentry_grouptombstone_id_seq'::regclass);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_organizations ALTER COLUMN id SET DEFAULT nextval('public.sentry_hipchat_ac_tenant_organizations_id_seq'::regclass);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_projects ALTER COLUMN id SET DEFAULT nextval('public.sentry_hipchat_ac_tenant_projects_id_seq'::regclass);
 
 
 --
@@ -6727,6 +6863,12 @@ INSERT INTO public.auth_permission VALUES (421, 'Can delete node', 140, 'delete_
 INSERT INTO public.auth_permission VALUES (422, 'Can add user social auth', 141, 'add_usersocialauth');
 INSERT INTO public.auth_permission VALUES (423, 'Can change user social auth', 141, 'change_usersocialauth');
 INSERT INTO public.auth_permission VALUES (424, 'Can delete user social auth', 141, 'delete_usersocialauth');
+INSERT INTO public.auth_permission VALUES (425, 'Can add tenant', 142, 'add_tenant');
+INSERT INTO public.auth_permission VALUES (426, 'Can change tenant', 142, 'change_tenant');
+INSERT INTO public.auth_permission VALUES (427, 'Can delete tenant', 142, 'delete_tenant');
+INSERT INTO public.auth_permission VALUES (428, 'Can add jira tenant', 143, 'add_jiratenant');
+INSERT INTO public.auth_permission VALUES (429, 'Can change jira tenant', 143, 'change_jiratenant');
+INSERT INTO public.auth_permission VALUES (430, 'Can delete jira tenant', 143, 'delete_jiratenant');
 
 
 --
@@ -6886,6 +7028,8 @@ INSERT INTO public.django_content_type VALUES (138, 'tag key', 'sentry', 'tagkey
 INSERT INTO public.django_content_type VALUES (139, 'tag value', 'sentry', 'tagvalue');
 INSERT INTO public.django_content_type VALUES (140, 'node', 'nodestore', 'node');
 INSERT INTO public.django_content_type VALUES (141, 'user social auth', 'social_auth', 'usersocialauth');
+INSERT INTO public.django_content_type VALUES (142, 'tenant', 'hipchat_ac', 'tenant');
+INSERT INTO public.django_content_type VALUES (143, 'jira tenant', 'jira_ac', 'jiratenant');
 
 
 --
@@ -6899,6 +7043,12 @@ INSERT INTO public.django_content_type VALUES (141, 'user social auth', 'social_
 --
 
 INSERT INTO public.django_site VALUES (1, 'example.com', 'example.com');
+
+
+--
+-- Data for Name: jira_ac_tenant; Type: TABLE DATA; Schema: public; Owner: -
+--
+
 
 
 --
@@ -7268,6 +7418,24 @@ INSERT INTO public.django_site VALUES (1, 'example.com', 'example.com');
 
 
 --
+-- Data for Name: sentry_hipchat_ac_tenant; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: sentry_hipchat_ac_tenant_organizations; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: sentry_hipchat_ac_tenant_projects; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
 -- Data for Name: sentry_identity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -7349,7 +7517,7 @@ INSERT INTO public.django_site VALUES (1, 'example.com', 'example.com');
 -- Data for Name: sentry_organization; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_organization VALUES (1, 'Sentry', 0, '2019-05-31 07:59:55.673455+00', 'sentry', 1, 'member');
+INSERT INTO public.sentry_organization VALUES (1, 'Sentry', 0, '2019-07-20 13:08:06.301331+00', 'sentry', 1, 'member');
 
 
 --
@@ -7410,7 +7578,7 @@ INSERT INTO public.sentry_organization VALUES (1, 'Sentry', 0, '2019-05-31 07:59
 -- Data for Name: sentry_project; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_project VALUES (1, 'Internal', false, '2019-05-31 07:59:55.698853+00', 0, 'internal', 1, NULL, NULL, 0, NULL);
+INSERT INTO public.sentry_project VALUES (1, 'Internal', false, '2019-07-20 13:08:06.309839+00', 0, 'internal', 1, NULL, NULL, 0, NULL);
 
 
 --
@@ -7453,15 +7621,15 @@ INSERT INTO public.sentry_project VALUES (1, 'Internal', false, '2019-05-31 07:5
 -- Data for Name: sentry_projectkey; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_projectkey VALUES (1, 1, 'e2cdc520f1904e10bdc076d1a971bb84', '92000959382e482e817b43fc3be589e7', '2019-05-31 07:59:55.725541+00', 1, 'Default', 0, NULL, NULL, '{}');
+INSERT INTO public.sentry_projectkey VALUES (1, 1, 'bed9da23716b4714be138a77c247d131', '160772e2c2ac475fbf602810cf472bdf', '2019-07-20 13:08:06.314646+00', 1, 'Default', 0, NULL, NULL, '{}');
 
 
 --
 -- Data for Name: sentry_projectoptions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_projectoptions VALUES (1, 1, 'sentry:relay-rev', 'gAJYIAAAADE0MWJmZjEwODM3YTExZTk4OThmMDI0MmFjMTYwMDA0cQEu');
-INSERT INTO public.sentry_projectoptions VALUES (2, 1, 'sentry:relay-rev-lastchange', 'gAJjZGF0ZXRpbWUKZGF0ZXRpbWUKcQFVCgfjBR8HOzcMgRxjcHl0egpfVVRDCnECKVJxA4ZScQQu');
+INSERT INTO public.sentry_projectoptions VALUES (1, 1, 'sentry:relay-rev', 'gAJYIAAAADY5ZmI3ZDZhYWFlZjExZTliZDMxMDI0MjBhMDAwMTBkcQEu');
+INSERT INTO public.sentry_projectoptions VALUES (2, 1, 'sentry:relay-rev-lastchange', 'gAJjZGF0ZXRpbWUKZGF0ZXRpbWUKcQFVCgfjBxQNCAYFYnhjcHl0egpfVVRDCnECKVJxA4ZScQQu');
 INSERT INTO public.sentry_projectoptions VALUES (3, 1, 'sentry:origins', 'gAJdcQFVASphLg==');
 
 
@@ -7584,24 +7752,24 @@ INSERT INTO public.sentry_projectteam VALUES (1, 1, 1);
 -- Data for Name: sentry_rule; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_rule VALUES (1, 1, 'Send a notification for new issues', 'eJxlj80OAiEMhO99ETgRd/0/GqNHLzzAhgCrJAiEosm+vXRl48FbZzr9JuUmdSCZjsG44mJABqkH7tMauEmbunKmWts6oA0lTyK/vEXxOxCjy1gGtDYM9l0z4kqGrPpC8rwkK2YHqFAypZeqPVUdqOoI97+SlhMhFjdOjX6bxYw+6cbtVl/wUxX9IE0/Ke9p7AHFBx5HTWU=', '2019-05-31 07:59:55.738917+00', 0, NULL);
+INSERT INTO public.sentry_rule VALUES (1, 1, 'Send a notification for new issues', 'eJxlj80OAiEMhO99ETgRd/0/GqNHLzzAhgCrJAiEosm+vXRl48FbZzr9JuUmdSCZjsG44mJABqkH7tMauEmbunKmWts6oA0lTyK/vEXxOxCjy1gGtDYM9l0z4kqGrPpC8rwkK2YHqFAypZeqPVUdqOoI97+SlhMhFjdOjX6bxYw+6cbtVl/wUxX9IE0/Ke9p7AHFBx5HTWU=', '2019-07-20 13:08:06.320171+00', 0, NULL);
 
 
 --
 -- Data for Name: sentry_savedsearch; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_savedsearch VALUES (1, NULL, 'Unresolved Issues', 'is:unresolved', '2019-05-31 07:59:34.91228+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (2, NULL, 'Needs Triage', 'is:unresolved is:unassigned', '2019-05-31 07:59:34.912438+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (3, NULL, 'Assigned To Me', 'is:unresolved assigned:me', '2019-05-31 07:59:34.912537+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (4, NULL, 'My Bookmarks', 'is:unresolved bookmarks:me', '2019-05-31 07:59:34.912609+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (5, NULL, 'New Today', 'is:unresolved age:-24h', '2019-05-31 07:59:34.912687+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (6, NULL, 'Errors Only', 'is:unresolved level:error', '2019-05-31 07:59:54.333736+00', false, NULL, true, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (7, 1, 'Unresolved Issues', 'is:unresolved', '2019-05-31 07:59:55.75223+00', true, NULL, false, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (8, 1, 'Needs Triage', 'is:unresolved is:unassigned', '2019-05-31 07:59:55.75421+00', false, NULL, false, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (9, 1, 'Assigned To Me', 'is:unresolved assigned:me', '2019-05-31 07:59:55.755491+00', false, NULL, false, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (10, 1, 'My Bookmarks', 'is:unresolved bookmarks:me', '2019-05-31 07:59:55.756626+00', false, NULL, false, NULL, 0);
-INSERT INTO public.sentry_savedsearch VALUES (11, 1, 'New Today', 'is:unresolved age:-24h', '2019-05-31 07:59:55.759208+00', false, NULL, false, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (1, NULL, 'Unresolved Issues', 'is:unresolved', '2019-07-20 13:07:39.817696+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (2, NULL, 'Needs Triage', 'is:unresolved is:unassigned', '2019-07-20 13:07:39.81781+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (3, NULL, 'Assigned To Me', 'is:unresolved assigned:me', '2019-07-20 13:07:39.817844+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (4, NULL, 'My Bookmarks', 'is:unresolved bookmarks:me', '2019-07-20 13:07:39.817875+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (5, NULL, 'New Today', 'is:unresolved age:-24h', '2019-07-20 13:07:39.817905+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (6, NULL, 'Errors Only', 'is:unresolved level:error', '2019-07-20 13:08:04.752276+00', false, NULL, true, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (7, 1, 'Unresolved Issues', 'is:unresolved', '2019-07-20 13:08:06.322023+00', true, NULL, false, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (8, 1, 'Needs Triage', 'is:unresolved is:unassigned', '2019-07-20 13:08:06.323739+00', false, NULL, false, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (9, 1, 'Assigned To Me', 'is:unresolved assigned:me', '2019-07-20 13:08:06.325069+00', false, NULL, false, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (10, 1, 'My Bookmarks', 'is:unresolved bookmarks:me', '2019-07-20 13:08:06.326458+00', false, NULL, false, NULL, 0);
+INSERT INTO public.sentry_savedsearch VALUES (11, 1, 'New Today', 'is:unresolved age:-24h', '2019-07-20 13:08:06.327843+00', false, NULL, false, NULL, 0);
 
 
 --
@@ -7662,7 +7830,7 @@ INSERT INTO public.sentry_savedsearch VALUES (11, 1, 'New Today', 'is:unresolved
 -- Data for Name: sentry_team; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sentry_team VALUES (1, 'sentry', 'Sentry', '2019-05-31 07:59:55.68865+00', 0, 1);
+INSERT INTO public.sentry_team VALUES (1, 'sentry', 'Sentry', '2019-07-20 13:08:06.306749+00', 0, 1);
 
 
 --
@@ -7729,508 +7897,511 @@ INSERT INTO public.sentry_team VALUES (1, 'sentry', 'Sentry', '2019-05-31 07:59:
 -- Data for Name: south_migrationhistory; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.south_migrationhistory VALUES (1, 'sentry', '0001_initial', '2019-05-31 07:56:21.751184+00');
-INSERT INTO public.south_migrationhistory VALUES (2, 'sentry', '0002_auto__del_field_groupedmessage_url__chg_field_groupedmessage_view__chg', '2019-05-31 07:56:22.083297+00');
-INSERT INTO public.south_migrationhistory VALUES (3, 'sentry', '0003_auto__add_field_message_group__del_field_groupedmessage_server_name', '2019-05-31 07:56:22.149841+00');
-INSERT INTO public.south_migrationhistory VALUES (4, 'sentry', '0004_auto__add_filtervalue__add_unique_filtervalue_key_value', '2019-05-31 07:56:22.192856+00');
-INSERT INTO public.south_migrationhistory VALUES (5, 'sentry', '0005_auto', '2019-05-31 07:56:22.217538+00');
-INSERT INTO public.south_migrationhistory VALUES (6, 'sentry', '0006_auto', '2019-05-31 07:56:22.228723+00');
-INSERT INTO public.south_migrationhistory VALUES (7, 'sentry', '0007_auto__add_field_message_site', '2019-05-31 07:56:22.256661+00');
-INSERT INTO public.south_migrationhistory VALUES (8, 'sentry', '0008_auto__chg_field_message_view__add_field_groupedmessage_data__chg_field', '2019-05-31 07:56:22.678388+00');
-INSERT INTO public.south_migrationhistory VALUES (9, 'sentry', '0009_auto__add_field_message_message_id', '2019-05-31 07:56:22.708026+00');
-INSERT INTO public.south_migrationhistory VALUES (10, 'sentry', '0010_auto__add_messageindex__add_unique_messageindex_column_value_object_id', '2019-05-31 07:56:22.74208+00');
-INSERT INTO public.south_migrationhistory VALUES (11, 'sentry', '0011_auto__add_field_groupedmessage_score', '2019-05-31 07:56:22.825015+00');
-INSERT INTO public.south_migrationhistory VALUES (12, 'sentry', '0012_auto', '2019-05-31 07:56:22.901882+00');
-INSERT INTO public.south_migrationhistory VALUES (13, 'sentry', '0013_auto__add_messagecountbyminute__add_unique_messagecountbyminute_group_', '2019-05-31 07:56:23.021828+00');
-INSERT INTO public.south_migrationhistory VALUES (14, 'sentry', '0014_auto', '2019-05-31 07:56:23.040285+00');
-INSERT INTO public.south_migrationhistory VALUES (15, 'sentry', '0014_auto__add_project__add_projectmember__add_unique_projectmember_project', '2019-05-31 07:56:23.142564+00');
-INSERT INTO public.south_migrationhistory VALUES (16, 'sentry', '0015_auto__add_field_message_project__add_field_messagecountbyminute_projec', '2019-05-31 07:56:23.584629+00');
-INSERT INTO public.south_migrationhistory VALUES (17, 'sentry', '0016_auto__add_field_projectmember_is_superuser', '2019-05-31 07:56:23.658099+00');
-INSERT INTO public.south_migrationhistory VALUES (18, 'sentry', '0017_auto__add_field_projectmember_api_key', '2019-05-31 07:56:23.718478+00');
-INSERT INTO public.south_migrationhistory VALUES (19, 'sentry', '0018_auto__chg_field_project_owner', '2019-05-31 07:56:23.899788+00');
-INSERT INTO public.south_migrationhistory VALUES (20, 'sentry', '0019_auto__del_field_projectmember_api_key__add_field_projectmember_public_', '2019-05-31 07:56:23.966938+00');
-INSERT INTO public.south_migrationhistory VALUES (21, 'sentry', '0020_auto__add_projectdomain__add_unique_projectdomain_project_domain', '2019-05-31 07:56:24.05512+00');
-INSERT INTO public.south_migrationhistory VALUES (22, 'sentry', '0021_auto__del_message__del_groupedmessage__del_unique_groupedmessage_proje', '2019-05-31 07:56:24.09034+00');
-INSERT INTO public.south_migrationhistory VALUES (23, 'sentry', '0022_auto__del_field_group_class_name__del_field_group_traceback__del_field', '2019-05-31 07:56:24.121036+00');
-INSERT INTO public.south_migrationhistory VALUES (24, 'sentry', '0023_auto__add_field_event_time_spent', '2019-05-31 07:56:24.160612+00');
-INSERT INTO public.south_migrationhistory VALUES (25, 'sentry', '0024_auto__add_field_group_time_spent_total__add_field_group_time_spent_cou', '2019-05-31 07:56:24.434024+00');
-INSERT INTO public.south_migrationhistory VALUES (26, 'sentry', '0025_auto__add_field_messagecountbyminute_time_spent_total__add_field_messa', '2019-05-31 07:56:24.663704+00');
-INSERT INTO public.south_migrationhistory VALUES (27, 'sentry', '0026_auto__add_field_project_status', '2019-05-31 07:56:24.756664+00');
-INSERT INTO public.south_migrationhistory VALUES (28, 'sentry', '0027_auto__chg_field_event_server_name', '2019-05-31 07:56:24.947719+00');
-INSERT INTO public.south_migrationhistory VALUES (29, 'sentry', '0028_auto__add_projectoptions__add_unique_projectoptions_project_key_value', '2019-05-31 07:56:25.016549+00');
-INSERT INTO public.south_migrationhistory VALUES (30, 'sentry', '0029_auto__del_field_projectmember_is_superuser__del_field_projectmember_pe', '2019-05-31 07:56:25.105368+00');
-INSERT INTO public.south_migrationhistory VALUES (31, 'sentry', '0030_auto__add_view__chg_field_event_group', '2019-05-31 07:56:25.285755+00');
-INSERT INTO public.south_migrationhistory VALUES (32, 'sentry', '0031_auto__add_field_view_verbose_name__add_field_view_verbose_name_plural_', '2019-05-31 07:56:25.343659+00');
-INSERT INTO public.south_migrationhistory VALUES (33, 'sentry', '0032_auto__add_eventmeta', '2019-05-31 07:56:25.437567+00');
-INSERT INTO public.south_migrationhistory VALUES (34, 'sentry', '0033_auto__add_option__add_unique_option_key_value', '2019-05-31 07:56:25.496955+00');
-INSERT INTO public.south_migrationhistory VALUES (35, 'sentry', '0034_auto__add_groupbookmark__add_unique_groupbookmark_project_user_group', '2019-05-31 07:56:25.610368+00');
-INSERT INTO public.south_migrationhistory VALUES (36, 'sentry', '0034_auto__add_unique_option_key__del_unique_option_value_key__del_unique_g', '2019-05-31 07:56:25.865199+00');
-INSERT INTO public.south_migrationhistory VALUES (37, 'sentry', '0036_auto__chg_field_option_value__chg_field_projectoption_value', '2019-05-31 07:56:26.187041+00');
-INSERT INTO public.south_migrationhistory VALUES (38, 'sentry', '0037_auto__add_unique_option_key__del_unique_option_value_key__del_unique_g', '2019-05-31 07:56:26.425415+00');
-INSERT INTO public.south_migrationhistory VALUES (39, 'sentry', '0038_auto__add_searchtoken__add_unique_searchtoken_document_field_token__ad', '2019-05-31 07:56:26.564954+00');
-INSERT INTO public.south_migrationhistory VALUES (40, 'sentry', '0039_auto__add_field_searchdocument_status', '2019-05-31 07:56:26.636103+00');
-INSERT INTO public.south_migrationhistory VALUES (41, 'sentry', '0040_auto__del_unique_event_event_id__add_unique_event_project_event_id', '2019-05-31 07:56:26.77322+00');
-INSERT INTO public.south_migrationhistory VALUES (42, 'sentry', '0041_auto__add_field_messagefiltervalue_last_seen__add_field_messagefilterv', '2019-05-31 07:56:26.827624+00');
-INSERT INTO public.south_migrationhistory VALUES (43, 'sentry', '0042_auto__add_projectcountbyminute__add_unique_projectcountbyminute_projec', '2019-05-31 07:56:26.903089+00');
-INSERT INTO public.south_migrationhistory VALUES (44, 'sentry', '0043_auto__chg_field_option_value__chg_field_projectoption_value', '2019-05-31 07:56:27.213424+00');
-INSERT INTO public.south_migrationhistory VALUES (45, 'sentry', '0044_auto__add_field_projectmember_is_active', '2019-05-31 07:56:27.313633+00');
-INSERT INTO public.south_migrationhistory VALUES (46, 'sentry', '0045_auto__add_pendingprojectmember__add_unique_pendingprojectmember_projec', '2019-05-31 07:56:27.433961+00');
-INSERT INTO public.south_migrationhistory VALUES (47, 'sentry', '0046_auto__add_teammember__add_unique_teammember_team_user__add_team__add_p', '2019-05-31 07:56:27.732615+00');
-INSERT INTO public.south_migrationhistory VALUES (48, 'sentry', '0047_migrate_project_slugs', '2019-05-31 07:56:27.790054+00');
-INSERT INTO public.south_migrationhistory VALUES (49, 'sentry', '0048_migrate_project_keys', '2019-05-31 07:56:27.8482+00');
-INSERT INTO public.south_migrationhistory VALUES (50, 'sentry', '0049_create_default_project_keys', '2019-05-31 07:56:27.896435+00');
-INSERT INTO public.south_migrationhistory VALUES (51, 'sentry', '0050_remove_project_keys_from_members', '2019-05-31 07:56:27.945097+00');
-INSERT INTO public.south_migrationhistory VALUES (52, 'sentry', '0051_auto__del_pendingprojectmember__del_unique_pendingprojectmember_projec', '2019-05-31 07:56:28.113938+00');
-INSERT INTO public.south_migrationhistory VALUES (53, 'sentry', '0052_migrate_project_members', '2019-05-31 07:56:28.184414+00');
-INSERT INTO public.south_migrationhistory VALUES (54, 'sentry', '0053_auto__del_projectmember__del_unique_projectmember_project_user', '2019-05-31 07:56:28.306534+00');
-INSERT INTO public.south_migrationhistory VALUES (55, 'sentry', '0054_fix_project_keys', '2019-05-31 07:56:28.383677+00');
-INSERT INTO public.south_migrationhistory VALUES (56, 'sentry', '0055_auto__del_projectdomain__del_unique_projectdomain_project_domain', '2019-05-31 07:56:28.50895+00');
-INSERT INTO public.south_migrationhistory VALUES (57, 'sentry', '0056_auto__add_field_group_resolved_at', '2019-05-31 07:56:28.584932+00');
-INSERT INTO public.south_migrationhistory VALUES (58, 'sentry', '0057_auto__add_field_group_active_at', '2019-05-31 07:56:28.872329+00');
-INSERT INTO public.south_migrationhistory VALUES (59, 'sentry', '0058_auto__add_useroption__add_unique_useroption_user_project_key', '2019-05-31 07:56:28.982541+00');
-INSERT INTO public.south_migrationhistory VALUES (60, 'sentry', '0059_auto__add_filterkey__add_unique_filterkey_project_key', '2019-05-31 07:56:29.076551+00');
-INSERT INTO public.south_migrationhistory VALUES (61, 'sentry', '0060_fill_filter_key', '2019-05-31 07:56:29.128781+00');
-INSERT INTO public.south_migrationhistory VALUES (62, 'sentry', '0061_auto__add_field_group_group_id__add_field_group_is_public', '2019-05-31 07:56:29.308338+00');
-INSERT INTO public.south_migrationhistory VALUES (63, 'sentry', '0062_correct_del_index_sentry_groupedmessage_logger__view__checksum', '2019-05-31 07:56:29.427037+00');
-INSERT INTO public.south_migrationhistory VALUES (64, 'sentry', '0063_auto', '2019-05-31 07:56:29.495098+00');
-INSERT INTO public.south_migrationhistory VALUES (65, 'sentry', '0064_index_checksum', '2019-05-31 07:56:29.553956+00');
-INSERT INTO public.south_migrationhistory VALUES (66, 'sentry', '0065_create_default_project_key', '2019-05-31 07:56:29.601709+00');
-INSERT INTO public.south_migrationhistory VALUES (67, 'sentry', '0066_auto__del_view', '2019-05-31 07:56:29.647807+00');
-INSERT INTO public.south_migrationhistory VALUES (68, 'sentry', '0067_auto__add_field_group_platform__add_field_event_platform', '2019-05-31 07:56:29.734815+00');
-INSERT INTO public.south_migrationhistory VALUES (69, 'sentry', '0068_auto__add_field_projectkey_user_added__add_field_projectkey_date_added', '2019-05-31 07:56:29.798755+00');
-INSERT INTO public.south_migrationhistory VALUES (70, 'sentry', '0069_auto__add_lostpasswordhash', '2019-05-31 07:56:29.883505+00');
-INSERT INTO public.south_migrationhistory VALUES (71, 'sentry', '0070_projectoption_key_length', '2019-05-31 07:56:30.066321+00');
-INSERT INTO public.south_migrationhistory VALUES (72, 'sentry', '0071_auto__add_field_group_users_seen', '2019-05-31 07:56:30.238891+00');
-INSERT INTO public.south_migrationhistory VALUES (73, 'sentry', '0072_auto__add_affecteduserbygroup__add_unique_affecteduserbygroup_project_', '2019-05-31 07:56:30.489641+00');
-INSERT INTO public.south_migrationhistory VALUES (74, 'sentry', '0073_auto__add_field_project_platform', '2019-05-31 07:56:30.54385+00');
-INSERT INTO public.south_migrationhistory VALUES (75, 'sentry', '0074_correct_filtervalue_index', '2019-05-31 07:56:30.674561+00');
-INSERT INTO public.south_migrationhistory VALUES (76, 'sentry', '0075_add_groupbookmark_index', '2019-05-31 07:56:30.733977+00');
-INSERT INTO public.south_migrationhistory VALUES (77, 'sentry', '0076_add_groupmeta_index', '2019-05-31 07:56:30.858972+00');
-INSERT INTO public.south_migrationhistory VALUES (78, 'sentry', '0077_auto__add_trackeduser__add_unique_trackeduser_project_ident', '2019-05-31 07:56:30.994455+00');
-INSERT INTO public.south_migrationhistory VALUES (79, 'sentry', '0078_auto__add_field_affecteduserbygroup_tuser', '2019-05-31 07:56:31.539665+00');
-INSERT INTO public.south_migrationhistory VALUES (80, 'sentry', '0079_auto__del_unique_affecteduserbygroup_project_ident_group__add_unique_a', '2019-05-31 07:56:31.887709+00');
-INSERT INTO public.south_migrationhistory VALUES (81, 'sentry', '0080_auto__chg_field_affecteduserbygroup_ident', '2019-05-31 07:56:32.337314+00');
-INSERT INTO public.south_migrationhistory VALUES (82, 'sentry', '0081_fill_trackeduser', '2019-05-31 07:56:32.446946+00');
-INSERT INTO public.south_migrationhistory VALUES (83, 'sentry', '0082_auto__add_activity__add_field_group_num_comments__add_field_event_num_', '2019-05-31 07:56:33.588555+00');
-INSERT INTO public.south_migrationhistory VALUES (84, 'sentry', '0083_migrate_dupe_groups', '2019-05-31 07:56:34.019595+00');
-INSERT INTO public.south_migrationhistory VALUES (85, 'sentry', '0084_auto__del_unique_group_project_checksum_logger_culprit__add_unique_gro', '2019-05-31 07:56:34.228609+00');
-INSERT INTO public.south_migrationhistory VALUES (86, 'sentry', '0085_auto__del_unique_project_slug__add_unique_project_slug_team', '2019-05-31 07:56:34.461291+00');
-INSERT INTO public.south_migrationhistory VALUES (87, 'sentry', '0086_auto__add_field_team_date_added', '2019-05-31 07:56:34.531319+00');
-INSERT INTO public.south_migrationhistory VALUES (88, 'sentry', '0087_auto__del_messagefiltervalue__del_unique_messagefiltervalue_project_ke', '2019-05-31 07:56:34.587818+00');
-INSERT INTO public.south_migrationhistory VALUES (89, 'sentry', '0088_auto__del_messagecountbyminute__del_unique_messagecountbyminute_projec', '2019-05-31 07:56:34.646916+00');
-INSERT INTO public.south_migrationhistory VALUES (90, 'sentry', '0089_auto__add_accessgroup__add_unique_accessgroup_team_name', '2019-05-31 07:56:34.850929+00');
-INSERT INTO public.south_migrationhistory VALUES (91, 'sentry', '0090_auto__add_grouptagkey__add_unique_grouptagkey_project_group_key__add_f', '2019-05-31 07:56:35.152828+00');
-INSERT INTO public.south_migrationhistory VALUES (92, 'sentry', '0091_auto__add_alert', '2019-05-31 07:56:35.300984+00');
-INSERT INTO public.south_migrationhistory VALUES (93, 'sentry', '0092_auto__add_alertrelatedgroup__add_unique_alertrelatedgroup_group_alert', '2019-05-31 07:56:35.569495+00');
-INSERT INTO public.south_migrationhistory VALUES (94, 'sentry', '0093_auto__add_field_alert_status', '2019-05-31 07:56:35.700199+00');
-INSERT INTO public.south_migrationhistory VALUES (95, 'sentry', '0094_auto__add_eventmapping__add_unique_eventmapping_project_event_id', '2019-05-31 07:56:35.856513+00');
-INSERT INTO public.south_migrationhistory VALUES (96, 'sentry', '0095_rebase', '2019-05-31 07:56:35.956557+00');
-INSERT INTO public.south_migrationhistory VALUES (97, 'sentry', '0096_auto__add_field_tagvalue_data', '2019-05-31 07:56:36.089201+00');
-INSERT INTO public.south_migrationhistory VALUES (98, 'sentry', '0097_auto__del_affecteduserbygroup__del_unique_affecteduserbygroup_project_', '2019-05-31 07:56:36.328947+00');
-INSERT INTO public.south_migrationhistory VALUES (99, 'sentry', '0098_auto__add_user__chg_field_team_owner__chg_field_activity_user__chg_fie', '2019-05-31 07:56:36.487699+00');
-INSERT INTO public.south_migrationhistory VALUES (100, 'sentry', '0099_auto__del_field_teammember_is_active', '2019-05-31 07:56:36.56415+00');
-INSERT INTO public.south_migrationhistory VALUES (101, 'sentry', '0100_auto__add_field_tagkey_label', '2019-05-31 07:56:36.639691+00');
-INSERT INTO public.south_migrationhistory VALUES (102, 'sentry', '0101_ensure_teams', '2019-05-31 07:56:36.711392+00');
-INSERT INTO public.south_migrationhistory VALUES (103, 'sentry', '0102_ensure_slugs', '2019-05-31 07:56:36.789937+00');
-INSERT INTO public.south_migrationhistory VALUES (104, 'sentry', '0103_ensure_non_empty_slugs', '2019-05-31 07:56:37.188557+00');
-INSERT INTO public.south_migrationhistory VALUES (105, 'sentry', '0104_auto__add_groupseen__add_unique_groupseen_group_user', '2019-05-31 07:56:37.330757+00');
-INSERT INTO public.south_migrationhistory VALUES (106, 'sentry', '0105_auto__chg_field_projectcountbyminute_time_spent_total__chg_field_group', '2019-05-31 07:56:38.538028+00');
-INSERT INTO public.south_migrationhistory VALUES (107, 'sentry', '0106_auto__del_searchtoken__del_unique_searchtoken_document_field_token__de', '2019-05-31 07:56:38.777915+00');
-INSERT INTO public.south_migrationhistory VALUES (108, 'sentry', '0107_expand_user', '2019-05-31 07:56:39.020588+00');
-INSERT INTO public.south_migrationhistory VALUES (109, 'sentry', '0108_fix_user', '2019-05-31 07:56:39.090492+00');
-INSERT INTO public.south_migrationhistory VALUES (110, 'sentry', '0109_index_filtervalue_times_seen', '2019-05-31 07:56:39.169481+00');
-INSERT INTO public.south_migrationhistory VALUES (111, 'sentry', '0110_index_filtervalue_last_seen', '2019-05-31 07:56:39.269189+00');
-INSERT INTO public.south_migrationhistory VALUES (112, 'sentry', '0111_index_filtervalue_first_seen', '2019-05-31 07:56:39.346321+00');
-INSERT INTO public.south_migrationhistory VALUES (113, 'sentry', '0112_auto__chg_field_option_value__chg_field_useroption_value__chg_field_pr', '2019-05-31 07:56:39.412846+00');
-INSERT INTO public.south_migrationhistory VALUES (114, 'sentry', '0113_auto__add_field_team_status', '2019-05-31 07:56:39.516488+00');
-INSERT INTO public.south_migrationhistory VALUES (115, 'sentry', '0114_auto__add_field_projectkey_roles', '2019-05-31 07:56:39.662152+00');
-INSERT INTO public.south_migrationhistory VALUES (116, 'sentry', '0115_auto__del_projectcountbyminute__del_unique_projectcountbyminute_projec', '2019-05-31 07:56:39.753401+00');
-INSERT INTO public.south_migrationhistory VALUES (117, 'sentry', '0116_auto__del_field_event_server_name__del_field_event_culprit__del_field_', '2019-05-31 07:56:39.851621+00');
-INSERT INTO public.south_migrationhistory VALUES (118, 'sentry', '0117_auto__add_rule', '2019-05-31 07:56:39.976661+00');
-INSERT INTO public.south_migrationhistory VALUES (119, 'sentry', '0118_create_default_rules', '2019-05-31 07:56:40.042655+00');
-INSERT INTO public.south_migrationhistory VALUES (120, 'sentry', '0119_auto__add_field_projectkey_label', '2019-05-31 07:56:40.104777+00');
-INSERT INTO public.south_migrationhistory VALUES (121, 'sentry', '0120_auto__add_grouprulestatus', '2019-05-31 07:56:40.25799+00');
-INSERT INTO public.south_migrationhistory VALUES (122, 'sentry', '0121_auto__add_unique_grouprulestatus_rule_group', '2019-05-31 07:56:40.327506+00');
-INSERT INTO public.south_migrationhistory VALUES (123, 'sentry', '0122_add_event_group_id_datetime_index', '2019-05-31 07:56:40.399191+00');
-INSERT INTO public.south_migrationhistory VALUES (124, 'sentry', '0123_auto__add_groupassignee__add_index_event_group_datetime', '2019-05-31 07:56:40.54081+00');
-INSERT INTO public.south_migrationhistory VALUES (125, 'sentry', '0124_auto__add_grouphash__add_unique_grouphash_project_hash', '2019-05-31 07:56:40.690668+00');
-INSERT INTO public.south_migrationhistory VALUES (126, 'sentry', '0125_auto__add_field_user_is_managed', '2019-05-31 07:56:40.794634+00');
-INSERT INTO public.south_migrationhistory VALUES (127, 'sentry', '0126_auto__add_field_option_last_updated', '2019-05-31 07:56:40.88689+00');
-INSERT INTO public.south_migrationhistory VALUES (128, 'sentry', '0127_auto__add_release__add_unique_release_project_version', '2019-05-31 07:56:41.008546+00');
-INSERT INTO public.south_migrationhistory VALUES (129, 'sentry', '0128_auto__add_broadcast', '2019-05-31 07:56:41.116306+00');
-INSERT INTO public.south_migrationhistory VALUES (130, 'sentry', '0129_auto__chg_field_release_id__chg_field_pendingteammember_id__chg_field_', '2019-05-31 07:56:41.196223+00');
-INSERT INTO public.south_migrationhistory VALUES (131, 'sentry', '0130_auto__del_field_project_owner', '2019-05-31 07:56:41.270498+00');
-INSERT INTO public.south_migrationhistory VALUES (132, 'sentry', '0131_auto__add_organizationmember__add_unique_organizationmember_organizati', '2019-05-31 07:56:41.476487+00');
-INSERT INTO public.south_migrationhistory VALUES (133, 'sentry', '0132_add_default_orgs', '2019-05-31 07:56:41.589965+00');
-INSERT INTO public.south_migrationhistory VALUES (134, 'sentry', '0133_add_org_members', '2019-05-31 07:56:41.675427+00');
-INSERT INTO public.south_migrationhistory VALUES (135, 'sentry', '0134_auto__chg_field_team_organization', '2019-05-31 07:56:42.113731+00');
-INSERT INTO public.south_migrationhistory VALUES (136, 'sentry', '0135_auto__chg_field_project_team', '2019-05-31 07:56:42.463841+00');
-INSERT INTO public.south_migrationhistory VALUES (137, 'sentry', '0136_auto__add_field_organizationmember_email__chg_field_organizationmember', '2019-05-31 07:56:42.775359+00');
-INSERT INTO public.south_migrationhistory VALUES (138, 'sentry', '0137_auto__add_field_organizationmember_has_global_access', '2019-05-31 07:56:42.985946+00');
-INSERT INTO public.south_migrationhistory VALUES (139, 'sentry', '0138_migrate_team_members', '2019-05-31 07:56:43.117365+00');
-INSERT INTO public.south_migrationhistory VALUES (140, 'sentry', '0139_auto__add_auditlogentry', '2019-05-31 07:56:43.27762+00');
-INSERT INTO public.south_migrationhistory VALUES (141, 'sentry', '0140_auto__add_field_organization_slug', '2019-05-31 07:56:43.383812+00');
-INSERT INTO public.south_migrationhistory VALUES (142, 'sentry', '0141_fill_org_slugs', '2019-05-31 07:56:43.48369+00');
-INSERT INTO public.south_migrationhistory VALUES (143, 'sentry', '0142_auto__add_field_project_organization__add_unique_project_organization_', '2019-05-31 07:56:43.616468+00');
-INSERT INTO public.south_migrationhistory VALUES (144, 'sentry', '0143_fill_project_orgs', '2019-05-31 07:56:43.712771+00');
-INSERT INTO public.south_migrationhistory VALUES (145, 'sentry', '0144_auto__chg_field_project_organization', '2019-05-31 07:56:44.012754+00');
-INSERT INTO public.south_migrationhistory VALUES (146, 'sentry', '0145_auto__chg_field_organization_slug', '2019-05-31 07:56:44.249118+00');
-INSERT INTO public.south_migrationhistory VALUES (147, 'sentry', '0146_auto__add_field_auditlogentry_ip_address', '2019-05-31 07:56:44.338092+00');
-INSERT INTO public.south_migrationhistory VALUES (148, 'sentry', '0147_auto__del_unique_team_slug__add_unique_team_organization_slug', '2019-05-31 07:56:44.541695+00');
-INSERT INTO public.south_migrationhistory VALUES (149, 'sentry', '0148_auto__add_helppage', '2019-05-31 07:56:44.684454+00');
-INSERT INTO public.south_migrationhistory VALUES (150, 'sentry', '0149_auto__chg_field_groupseen_project__chg_field_groupseen_user__chg_field', '2019-05-31 07:56:44.775011+00');
-INSERT INTO public.south_migrationhistory VALUES (151, 'sentry', '0150_fix_broken_rules', '2019-05-31 07:56:44.871361+00');
-INSERT INTO public.south_migrationhistory VALUES (152, 'sentry', '0151_auto__add_file', '2019-05-31 07:56:45.444046+00');
-INSERT INTO public.south_migrationhistory VALUES (153, 'sentry', '0152_auto__add_field_file_checksum__chg_field_file_name__add_unique_file_na', '2019-05-31 07:56:45.710955+00');
-INSERT INTO public.south_migrationhistory VALUES (154, 'sentry', '0153_auto__add_field_grouprulestatus_last_active', '2019-05-31 07:56:45.821182+00');
-INSERT INTO public.south_migrationhistory VALUES (155, 'sentry', '0154_auto__add_field_tagkey_status', '2019-05-31 07:56:45.945292+00');
-INSERT INTO public.south_migrationhistory VALUES (156, 'sentry', '0155_auto__add_field_projectkey_status', '2019-05-31 07:56:46.132939+00');
-INSERT INTO public.south_migrationhistory VALUES (157, 'sentry', '0156_auto__add_apikey', '2019-05-31 07:56:46.323488+00');
-INSERT INTO public.south_migrationhistory VALUES (158, 'sentry', '0157_auto__add_authidentity__add_unique_authidentity_auth_provider_ident__a', '2019-05-31 07:56:46.56231+00');
-INSERT INTO public.south_migrationhistory VALUES (159, 'sentry', '0158_auto__add_unique_authidentity_auth_provider_user', '2019-05-31 07:56:46.679107+00');
-INSERT INTO public.south_migrationhistory VALUES (160, 'sentry', '0159_auto__add_field_authidentity_last_verified__add_field_organizationmemb', '2019-05-31 07:56:46.831441+00');
-INSERT INTO public.south_migrationhistory VALUES (161, 'sentry', '0160_auto__add_field_authprovider_default_global_access', '2019-05-31 07:56:47.057811+00');
-INSERT INTO public.south_migrationhistory VALUES (162, 'sentry', '0161_auto__chg_field_authprovider_config', '2019-05-31 07:56:47.366767+00');
-INSERT INTO public.south_migrationhistory VALUES (163, 'sentry', '0162_auto__chg_field_authidentity_data', '2019-05-31 07:56:47.660975+00');
-INSERT INTO public.south_migrationhistory VALUES (164, 'sentry', '0163_auto__add_field_authidentity_last_synced', '2019-05-31 07:56:47.772722+00');
-INSERT INTO public.south_migrationhistory VALUES (165, 'sentry', '0164_auto__add_releasefile__add_unique_releasefile_release_ident__add_field', '2019-05-31 07:56:48.350507+00');
-INSERT INTO public.south_migrationhistory VALUES (166, 'sentry', '0165_auto__del_unique_file_name_checksum', '2019-05-31 07:56:48.585752+00');
-INSERT INTO public.south_migrationhistory VALUES (167, 'sentry', '0166_auto__chg_field_user_id__add_field_apikey_allowed_origins', '2019-05-31 07:56:48.716074+00');
-INSERT INTO public.south_migrationhistory VALUES (168, 'sentry', '0167_auto__add_field_authprovider_flags', '2019-05-31 07:56:48.866849+00');
-INSERT INTO public.south_migrationhistory VALUES (169, 'sentry', '0168_unfill_projectkey_user', '2019-05-31 07:56:49.028097+00');
-INSERT INTO public.south_migrationhistory VALUES (170, 'sentry', '0169_auto__del_field_projectkey_user', '2019-05-31 07:56:49.140579+00');
-INSERT INTO public.south_migrationhistory VALUES (171, 'sentry', '0170_auto__add_organizationmemberteam__add_unique_organizationmemberteam_te', '2019-05-31 07:56:49.401687+00');
-INSERT INTO public.south_migrationhistory VALUES (172, 'sentry', '0171_auto__chg_field_team_owner', '2019-05-31 07:56:49.784535+00');
-INSERT INTO public.south_migrationhistory VALUES (173, 'sentry', '0172_auto__del_field_team_owner', '2019-05-31 07:56:49.898489+00');
-INSERT INTO public.south_migrationhistory VALUES (174, 'sentry', '0173_auto__del_teammember__del_unique_teammember_team_user', '2019-05-31 07:56:50.113379+00');
-INSERT INTO public.south_migrationhistory VALUES (175, 'sentry', '0174_auto__del_field_projectkey_user_added', '2019-05-31 07:56:50.254013+00');
-INSERT INTO public.south_migrationhistory VALUES (176, 'sentry', '0175_auto__del_pendingteammember__del_unique_pendingteammember_team_email', '2019-05-31 07:56:50.447201+00');
-INSERT INTO public.south_migrationhistory VALUES (177, 'sentry', '0176_auto__add_field_organizationmember_counter__add_unique_organizationmem', '2019-05-31 07:56:50.614453+00');
-INSERT INTO public.south_migrationhistory VALUES (178, 'sentry', '0177_fill_member_counters', '2019-05-31 07:56:50.741389+00');
-INSERT INTO public.south_migrationhistory VALUES (179, 'sentry', '0178_auto__del_unique_organizationmember_organization_counter', '2019-05-31 07:56:50.951153+00');
-INSERT INTO public.south_migrationhistory VALUES (180, 'sentry', '0179_auto__add_field_release_date_released', '2019-05-31 07:56:51.070171+00');
-INSERT INTO public.south_migrationhistory VALUES (181, 'sentry', '0180_auto__add_field_release_environment__add_field_release_ref__add_field_', '2019-05-31 07:56:51.344731+00');
-INSERT INTO public.south_migrationhistory VALUES (182, 'sentry', '0181_auto__del_field_release_environment__del_unique_release_project_versio', '2019-05-31 07:56:51.58908+00');
-INSERT INTO public.south_migrationhistory VALUES (183, 'sentry', '0182_auto__add_field_auditlogentry_actor_label__add_field_auditlogentry_act', '2019-05-31 07:56:51.915135+00');
-INSERT INTO public.south_migrationhistory VALUES (184, 'sentry', '0183_auto__del_index_grouphash_hash', '2019-05-31 07:56:52.033911+00');
-INSERT INTO public.south_migrationhistory VALUES (185, 'sentry', '0184_auto__del_field_group_checksum__del_unique_group_project_checksum__del', '2019-05-31 07:56:52.261331+00');
-INSERT INTO public.south_migrationhistory VALUES (186, 'sentry', '0185_auto__add_savedsearch__add_unique_savedsearch_project_name', '2019-05-31 07:56:52.463897+00');
-INSERT INTO public.south_migrationhistory VALUES (187, 'sentry', '0186_auto__add_field_group_first_release', '2019-05-31 07:56:52.678499+00');
-INSERT INTO public.south_migrationhistory VALUES (188, 'sentry', '0187_auto__add_index_group_project_first_release', '2019-05-31 07:56:52.819843+00');
-INSERT INTO public.south_migrationhistory VALUES (189, 'sentry', '0188_auto__add_userreport', '2019-05-31 07:56:53.009069+00');
-INSERT INTO public.south_migrationhistory VALUES (190, 'sentry', '0189_auto__add_index_userreport_project_event_id', '2019-05-31 07:56:53.148362+00');
-INSERT INTO public.south_migrationhistory VALUES (191, 'sentry', '0190_auto__add_field_release_new_groups', '2019-05-31 07:56:53.317145+00');
-INSERT INTO public.south_migrationhistory VALUES (192, 'sentry', '0191_auto__del_alert__del_alertrelatedgroup__del_unique_alertrelatedgroup_g', '2019-05-31 07:56:53.547404+00');
-INSERT INTO public.south_migrationhistory VALUES (193, 'sentry', '0192_add_model_groupemailthread', '2019-05-31 07:56:53.812821+00');
-INSERT INTO public.south_migrationhistory VALUES (194, 'sentry', '0193_auto__del_unique_groupemailthread_msgid__add_unique_groupemailthread_e', '2019-05-31 07:56:54.019943+00');
-INSERT INTO public.south_migrationhistory VALUES (195, 'sentry', '0194_auto__del_field_project_platform', '2019-05-31 07:56:54.153585+00');
-INSERT INTO public.south_migrationhistory VALUES (196, 'sentry', '0195_auto__chg_field_organization_owner', '2019-05-31 07:56:55.032429+00');
-INSERT INTO public.south_migrationhistory VALUES (197, 'sentry', '0196_auto__del_field_organization_owner', '2019-05-31 07:56:55.156663+00');
-INSERT INTO public.south_migrationhistory VALUES (198, 'sentry', '0197_auto__del_accessgroup__del_unique_accessgroup_team_name', '2019-05-31 07:56:55.351578+00');
-INSERT INTO public.south_migrationhistory VALUES (199, 'sentry', '0198_auto__add_field_release_primary_owner', '2019-05-31 07:56:55.564487+00');
-INSERT INTO public.south_migrationhistory VALUES (200, 'sentry', '0199_auto__add_field_project_first_event', '2019-05-31 07:56:55.68712+00');
-INSERT INTO public.south_migrationhistory VALUES (201, 'sentry', '0200_backfill_first_event', '2019-05-31 07:56:55.808904+00');
-INSERT INTO public.south_migrationhistory VALUES (202, 'sentry', '0201_auto__add_eventuser__add_unique_eventuser_project_ident__add_index_eve', '2019-05-31 07:56:56.024549+00');
-INSERT INTO public.south_migrationhistory VALUES (203, 'sentry', '0202_auto__add_field_eventuser_hash__add_unique_eventuser_project_hash', '2019-05-31 07:56:56.168647+00');
-INSERT INTO public.south_migrationhistory VALUES (204, 'sentry', '0203_auto__chg_field_eventuser_username__chg_field_eventuser_ident', '2019-05-31 07:56:56.656682+00');
-INSERT INTO public.south_migrationhistory VALUES (205, 'sentry', '0204_backfill_team_membership', '2019-05-31 07:56:56.799897+00');
-INSERT INTO public.south_migrationhistory VALUES (206, 'sentry', '0205_auto__add_field_organizationmember_role', '2019-05-31 07:56:56.98186+00');
-INSERT INTO public.south_migrationhistory VALUES (207, 'sentry', '0206_backfill_member_role', '2019-05-31 07:56:57.177341+00');
-INSERT INTO public.south_migrationhistory VALUES (208, 'sentry', '0207_auto__add_field_organization_default_role', '2019-05-31 07:56:57.327646+00');
-INSERT INTO public.south_migrationhistory VALUES (209, 'sentry', '0208_backfill_default_role', '2019-05-31 07:56:57.49101+00');
-INSERT INTO public.south_migrationhistory VALUES (210, 'sentry', '0209_auto__add_broadcastseen__add_unique_broadcastseen_broadcast_user', '2019-05-31 07:56:57.694334+00');
-INSERT INTO public.south_migrationhistory VALUES (211, 'sentry', '0210_auto__del_field_broadcast_badge', '2019-05-31 07:56:57.821597+00');
-INSERT INTO public.south_migrationhistory VALUES (212, 'sentry', '0211_auto__add_field_broadcast_title', '2019-05-31 07:56:57.974078+00');
-INSERT INTO public.south_migrationhistory VALUES (213, 'sentry', '0212_auto__add_fileblob__add_field_file_blob', '2019-05-31 07:56:58.396783+00');
-INSERT INTO public.south_migrationhistory VALUES (214, 'sentry', '0212_auto__add_organizationoption__add_unique_organizationoption_organizati', '2019-05-31 07:56:58.614062+00');
-INSERT INTO public.south_migrationhistory VALUES (215, 'sentry', '0213_migrate_file_blobs', '2019-05-31 07:56:58.777566+00');
-INSERT INTO public.south_migrationhistory VALUES (216, 'sentry', '0214_auto__add_field_broadcast_upstream_id', '2019-05-31 07:56:58.927028+00');
-INSERT INTO public.south_migrationhistory VALUES (217, 'sentry', '0215_auto__add_field_broadcast_date_expires', '2019-05-31 07:56:59.069255+00');
-INSERT INTO public.south_migrationhistory VALUES (218, 'sentry', '0216_auto__add_groupsnooze', '2019-05-31 07:56:59.238879+00');
-INSERT INTO public.south_migrationhistory VALUES (219, 'sentry', '0217_auto__add_groupresolution', '2019-05-31 07:56:59.4366+00');
-INSERT INTO public.south_migrationhistory VALUES (220, 'sentry', '0218_auto__add_field_groupresolution_status', '2019-05-31 07:56:59.61747+00');
-INSERT INTO public.south_migrationhistory VALUES (221, 'sentry', '0219_auto__add_field_groupbookmark_date_added', '2019-05-31 07:56:59.774224+00');
-INSERT INTO public.south_migrationhistory VALUES (222, 'sentry', '0220_auto__del_field_fileblob_storage_options__del_field_fileblob_storage__', '2019-05-31 07:56:59.927915+00');
-INSERT INTO public.south_migrationhistory VALUES (223, 'sentry', '0221_auto__chg_field_user_first_name', '2019-05-31 07:57:00.198641+00');
-INSERT INTO public.south_migrationhistory VALUES (224, 'sentry', '0222_auto__del_field_user_last_name__del_field_user_first_name__add_field_u', '2019-05-31 07:57:00.34271+00');
-INSERT INTO public.south_migrationhistory VALUES (225, 'sentry', '0223_delete_old_sentry_docs_options', '2019-05-31 07:57:00.502114+00');
-INSERT INTO public.south_migrationhistory VALUES (226, 'sentry', '0224_auto__add_index_userreport_project_date_added', '2019-05-31 07:57:00.658066+00');
-INSERT INTO public.south_migrationhistory VALUES (227, 'sentry', '0225_auto__add_fileblobindex__add_unique_fileblobindex_file_blob_offset', '2019-05-31 07:57:00.848939+00');
-INSERT INTO public.south_migrationhistory VALUES (228, 'sentry', '0226_backfill_file_size', '2019-05-31 07:57:01.011229+00');
-INSERT INTO public.south_migrationhistory VALUES (229, 'sentry', '0227_auto__del_field_activity_event', '2019-05-31 07:57:01.161385+00');
-INSERT INTO public.south_migrationhistory VALUES (230, 'sentry', '0228_auto__del_field_event_num_comments', '2019-05-31 07:57:01.314055+00');
-INSERT INTO public.south_migrationhistory VALUES (231, 'sentry', '0229_drop_event_constraints', '2019-05-31 07:57:01.701635+00');
-INSERT INTO public.south_migrationhistory VALUES (232, 'sentry', '0230_auto__del_field_eventmapping_group__del_field_eventmapping_project__ad', '2019-05-31 07:57:01.84761+00');
-INSERT INTO public.south_migrationhistory VALUES (233, 'sentry', '0231_auto__add_field_savedsearch_is_default', '2019-05-31 07:57:02.027907+00');
-INSERT INTO public.south_migrationhistory VALUES (234, 'sentry', '0232_default_savedsearch', '2019-05-31 07:57:02.201733+00');
-INSERT INTO public.south_migrationhistory VALUES (235, 'sentry', '0233_add_new_savedsearch', '2019-05-31 07:57:02.356649+00');
-INSERT INTO public.south_migrationhistory VALUES (236, 'sentry', '0234_auto__add_savedsearchuserdefault__add_unique_savedsearchuserdefault_pr', '2019-05-31 07:57:02.573718+00');
-INSERT INTO public.south_migrationhistory VALUES (237, 'sentry', '0235_auto__add_projectbookmark__add_unique_projectbookmark_project_id_user_', '2019-05-31 07:57:02.767683+00');
-INSERT INTO public.south_migrationhistory VALUES (238, 'sentry', '0236_auto__add_organizationonboardingtask__add_unique_organizationonboardin', '2019-05-31 07:57:02.985021+00');
-INSERT INTO public.south_migrationhistory VALUES (239, 'sentry', '0237_auto__add_eventtag__add_unique_eventtag_event_id_key_id_value_id', '2019-05-31 07:57:03.171761+00');
-INSERT INTO public.south_migrationhistory VALUES (240, 'sentry', '0238_fill_org_onboarding_tasks', '2019-05-31 07:57:03.347833+00');
-INSERT INTO public.south_migrationhistory VALUES (241, 'sentry', '0239_auto__add_projectdsymfile__add_unique_projectdsymfile_project_uuid__ad', '2019-05-31 07:57:03.62877+00');
-INSERT INTO public.south_migrationhistory VALUES (242, 'sentry', '0240_fill_onboarding_option', '2019-05-31 07:57:03.813185+00');
-INSERT INTO public.south_migrationhistory VALUES (243, 'sentry', '0241_auto__add_counter__add_unique_counter_project_ident__add_field_group_s', '2019-05-31 07:57:04.029424+00');
-INSERT INTO public.south_migrationhistory VALUES (244, 'sentry', '0242_auto__add_field_project_forced_color', '2019-05-31 07:57:04.207637+00');
-INSERT INTO public.south_migrationhistory VALUES (245, 'sentry', '0243_remove_inactive_members', '2019-05-31 07:57:04.397551+00');
-INSERT INTO public.south_migrationhistory VALUES (246, 'sentry', '0244_auto__add_groupredirect', '2019-05-31 07:57:04.609816+00');
-INSERT INTO public.south_migrationhistory VALUES (247, 'sentry', '0245_auto__del_field_project_callsign__del_unique_project_organization_call', '2019-05-31 07:57:05.58218+00');
-INSERT INTO public.south_migrationhistory VALUES (248, 'sentry', '0246_auto__add_dsymsymbol__add_unique_dsymsymbol_object_address__add_dsymsd', '2019-05-31 07:57:06.056842+00');
-INSERT INTO public.south_migrationhistory VALUES (249, 'sentry', '0247_migrate_file_blobs', '2019-05-31 07:57:06.312585+00');
-INSERT INTO public.south_migrationhistory VALUES (250, 'sentry', '0248_auto__add_projectplatform__add_unique_projectplatform_project_id_platf', '2019-05-31 07:57:06.598063+00');
-INSERT INTO public.south_migrationhistory VALUES (251, 'sentry', '0249_auto__add_index_eventtag_project_id_key_id_value_id', '2019-05-31 07:57:06.818041+00');
-INSERT INTO public.south_migrationhistory VALUES (252, 'sentry', '0250_auto__add_unique_userreport_project_event_id', '2019-05-31 07:57:07.066737+00');
-INSERT INTO public.south_migrationhistory VALUES (253, 'sentry', '0251_auto__add_useravatar', '2019-05-31 07:57:07.339434+00');
-INSERT INTO public.south_migrationhistory VALUES (254, 'sentry', '0252_default_users_to_gravatar', '2019-05-31 07:57:07.556911+00');
-INSERT INTO public.south_migrationhistory VALUES (255, 'sentry', '0253_auto__add_field_eventtag_group_id', '2019-05-31 07:57:07.772416+00');
-INSERT INTO public.south_migrationhistory VALUES (256, 'sentry', '0254_auto__add_index_eventtag_group_id_key_id_value_id', '2019-05-31 07:57:07.993123+00');
-INSERT INTO public.south_migrationhistory VALUES (257, 'sentry', '0255_auto__add_apitoken', '2019-05-31 07:57:08.262956+00');
-INSERT INTO public.south_migrationhistory VALUES (258, 'sentry', '0256_auto__add_authenticator', '2019-05-31 07:57:08.519412+00');
-INSERT INTO public.south_migrationhistory VALUES (259, 'sentry', '0257_repair_activity', '2019-05-31 07:57:08.767756+00');
-INSERT INTO public.south_migrationhistory VALUES (260, 'sentry', '0258_auto__add_field_user_is_password_expired__add_field_user_last_password', '2019-05-31 07:57:09.02328+00');
-INSERT INTO public.south_migrationhistory VALUES (261, 'sentry', '0259_auto__add_useremail__add_unique_useremail_user_email', '2019-05-31 07:57:09.31828+00');
-INSERT INTO public.south_migrationhistory VALUES (262, 'sentry', '0260_populate_email_addresses', '2019-05-31 07:57:09.558011+00');
-INSERT INTO public.south_migrationhistory VALUES (263, 'sentry', '0261_auto__add_groupsubscription__add_unique_groupsubscription_group_user', '2019-05-31 07:57:09.847023+00');
-INSERT INTO public.south_migrationhistory VALUES (264, 'sentry', '0262_fix_tag_indexes', '2019-05-31 07:57:10.174954+00');
-INSERT INTO public.south_migrationhistory VALUES (265, 'sentry', '0263_remove_default_regression_rule', '2019-05-31 07:57:10.408931+00');
-INSERT INTO public.south_migrationhistory VALUES (266, 'sentry', '0264_drop_grouptagvalue_project_index', '2019-05-31 07:57:10.643108+00');
-INSERT INTO public.south_migrationhistory VALUES (267, 'sentry', '0265_auto__add_field_rule_status', '2019-05-31 07:57:10.914065+00');
-INSERT INTO public.south_migrationhistory VALUES (268, 'sentry', '0266_auto__add_grouprelease__add_unique_grouprelease_group_id_release_id_en', '2019-05-31 07:57:11.208466+00');
-INSERT INTO public.south_migrationhistory VALUES (269, 'sentry', '0267_auto__add_environment__add_unique_environment_project_id_name__add_rel', '2019-05-31 07:57:11.523372+00');
-INSERT INTO public.south_migrationhistory VALUES (270, 'sentry', '0268_fill_environment', '2019-05-31 07:57:11.810046+00');
-INSERT INTO public.south_migrationhistory VALUES (271, 'sentry', '0269_auto__del_helppage', '2019-05-31 07:57:12.062957+00');
-INSERT INTO public.south_migrationhistory VALUES (272, 'sentry', '0270_auto__add_field_organizationmember_token', '2019-05-31 07:57:12.335812+00');
-INSERT INTO public.south_migrationhistory VALUES (273, 'sentry', '0271_auto__del_field_organizationmember_counter', '2019-05-31 07:57:12.588301+00');
-INSERT INTO public.south_migrationhistory VALUES (274, 'sentry', '0272_auto__add_unique_authenticator_user_type', '2019-05-31 07:57:12.849404+00');
-INSERT INTO public.south_migrationhistory VALUES (275, 'sentry', '0273_auto__add_repository__add_unique_repository_organization_id_name__add_', '2019-05-31 07:57:13.278497+00');
-INSERT INTO public.south_migrationhistory VALUES (276, 'sentry', '0274_auto__add_index_commit_repository_id_date_added', '2019-05-31 07:57:13.552293+00');
-INSERT INTO public.south_migrationhistory VALUES (277, 'sentry', '0275_auto__del_index_grouptagvalue_project_key_value__add_index_grouptagval', '2019-05-31 07:57:13.837346+00');
-INSERT INTO public.south_migrationhistory VALUES (278, 'sentry', '0276_auto__add_field_user_session_nonce', '2019-05-31 07:57:14.108473+00');
-INSERT INTO public.south_migrationhistory VALUES (279, 'sentry', '0277_auto__add_commitfilechange__add_unique_commitfilechange_commit_filenam', '2019-05-31 07:57:14.513637+00');
-INSERT INTO public.south_migrationhistory VALUES (280, 'sentry', '0278_auto__add_releaseproject__add_unique_releaseproject_project_release__a', '2019-05-31 07:57:14.885453+00');
-INSERT INTO public.south_migrationhistory VALUES (281, 'sentry', '0279_populate_release_orgs_and_projects', '2019-05-31 07:57:15.191296+00');
-INSERT INTO public.south_migrationhistory VALUES (282, 'sentry', '0280_auto__add_field_releasecommit_organization_id', '2019-05-31 07:57:15.482525+00');
-INSERT INTO public.south_migrationhistory VALUES (283, 'sentry', '0281_populate_release_commit_organization_id', '2019-05-31 07:57:15.775802+00');
-INSERT INTO public.south_migrationhistory VALUES (284, 'sentry', '0282_auto__add_field_releasefile_organization__add_field_releaseenvironment', '2019-05-31 07:57:16.125025+00');
-INSERT INTO public.south_migrationhistory VALUES (285, 'sentry', '0283_populate_release_environment_and_release_file_organization', '2019-05-31 07:57:16.447226+00');
-INSERT INTO public.south_migrationhistory VALUES (286, 'sentry', '0284_auto__del_field_release_project__add_field_release_project_id__chg_fie', '2019-05-31 07:57:17.325868+00');
-INSERT INTO public.south_migrationhistory VALUES (287, 'sentry', '0285_auto__chg_field_release_project_id__chg_field_releasefile_project_id', '2019-05-31 07:57:17.641751+00');
-INSERT INTO public.south_migrationhistory VALUES (288, 'sentry', '0286_drop_project_fk_release_release_file', '2019-05-31 07:57:17.951986+00');
-INSERT INTO public.south_migrationhistory VALUES (289, 'sentry', '0287_auto__add_field_releaseproject_new_groups', '2019-05-31 07:57:18.278189+00');
-INSERT INTO public.south_migrationhistory VALUES (290, 'sentry', '0288_set_release_project_new_groups_to_zero', '2019-05-31 07:57:18.611586+00');
-INSERT INTO public.south_migrationhistory VALUES (291, 'sentry', '0289_auto__add_organizationavatar', '2019-05-31 07:57:18.99656+00');
-INSERT INTO public.south_migrationhistory VALUES (292, 'sentry', '0290_populate_release_project_new_groups', '2019-05-31 07:57:19.336572+00');
-INSERT INTO public.south_migrationhistory VALUES (293, 'sentry', '0291_merge_legacy_releases', '2019-05-31 07:57:20.605118+00');
-INSERT INTO public.south_migrationhistory VALUES (294, 'sentry', '0292_auto__add_unique_release_organization_version', '2019-05-31 07:57:20.94302+00');
-INSERT INTO public.south_migrationhistory VALUES (295, 'sentry', '0293_auto__del_unique_release_project_id_version', '2019-05-31 07:57:21.326712+00');
-INSERT INTO public.south_migrationhistory VALUES (296, 'sentry', '0294_auto__add_groupcommitresolution__add_unique_groupcommitresolution_grou', '2019-05-31 07:57:21.692936+00');
-INSERT INTO public.south_migrationhistory VALUES (297, 'sentry', '0295_auto__add_environmentproject__add_unique_environmentproject_project_en', '2019-05-31 07:57:22.086036+00');
-INSERT INTO public.south_migrationhistory VALUES (298, 'sentry', '0296_populate_environment_organization_and_projects', '2019-05-31 07:57:22.436633+00');
-INSERT INTO public.south_migrationhistory VALUES (299, 'sentry', '0297_auto__add_field_project_flags', '2019-05-31 07:57:22.790816+00');
-INSERT INTO public.south_migrationhistory VALUES (300, 'sentry', '0298_backfill_project_has_releases', '2019-05-31 07:57:23.157133+00');
-INSERT INTO public.south_migrationhistory VALUES (301, 'sentry', '0299_auto__chg_field_environment_organization_id', '2019-05-31 07:57:23.614169+00');
-INSERT INTO public.south_migrationhistory VALUES (302, 'sentry', '0300_auto__add_processingissue__add_unique_processingissue_project_checksum', '2019-05-31 07:57:24.137833+00');
-INSERT INTO public.south_migrationhistory VALUES (303, 'sentry', '0301_auto__chg_field_environment_project_id__chg_field_releaseenvironment_p', '2019-05-31 07:57:24.502219+00');
-INSERT INTO public.south_migrationhistory VALUES (304, 'sentry', '0302_merge_environments', '2019-05-31 07:57:24.902213+00');
-INSERT INTO public.south_migrationhistory VALUES (305, 'sentry', '0303_fix_release_new_group_counts', '2019-05-31 07:57:25.269721+00');
-INSERT INTO public.south_migrationhistory VALUES (306, 'sentry', '0304_auto__add_deploy', '2019-05-31 07:57:25.695499+00');
-INSERT INTO public.south_migrationhistory VALUES (307, 'sentry', '0305_auto__chg_field_authidentity_data__chg_field_useroption_value__chg_fie', '2019-05-31 07:57:26.076024+00');
-INSERT INTO public.south_migrationhistory VALUES (308, 'sentry', '0306_auto__add_apigrant__add_apiauthorization__add_unique_apiauthorization_', '2019-05-31 07:57:26.690858+00');
-INSERT INTO public.south_migrationhistory VALUES (309, 'sentry', '0307_auto__add_field_apigrant_scope_list__add_field_apitoken_scope_list__ad', '2019-05-31 07:57:27.167678+00');
-INSERT INTO public.south_migrationhistory VALUES (310, 'sentry', '0308_auto__add_versiondsymfile__add_unique_versiondsymfile_dsym_file_versio', '2019-05-31 07:57:27.680407+00');
-INSERT INTO public.south_migrationhistory VALUES (311, 'sentry', '0308_backfill_scopes_list', '2019-05-31 07:57:28.162554+00');
-INSERT INTO public.south_migrationhistory VALUES (312, 'sentry', '0309_fix_application_state', '2019-05-31 07:57:28.579091+00');
-INSERT INTO public.south_migrationhistory VALUES (313, 'sentry', '0310_auto__add_field_savedsearch_owner', '2019-05-31 07:57:29.00204+00');
-INSERT INTO public.south_migrationhistory VALUES (314, 'sentry', '0311_auto__add_releaseheadcommit__add_unique_releaseheadcommit_repository_i', '2019-05-31 07:57:29.503651+00');
-INSERT INTO public.south_migrationhistory VALUES (315, 'sentry', '0312_create_missing_emails', '2019-05-31 07:57:30.021583+00');
-INSERT INTO public.south_migrationhistory VALUES (316, 'sentry', '0313_auto__add_field_commitauthor_external_id__add_unique_commitauthor_orga', '2019-05-31 07:57:30.446706+00');
-INSERT INTO public.south_migrationhistory VALUES (317, 'sentry', '0314_auto__add_distribution__add_unique_distribution_release_name__add_fiel', '2019-05-31 07:57:31.014819+00');
-INSERT INTO public.south_migrationhistory VALUES (318, 'sentry', '0315_auto__add_field_useroption_organization__add_unique_useroption_user_or', '2019-05-31 07:57:31.471736+00');
-INSERT INTO public.south_migrationhistory VALUES (319, 'sentry', '0316_auto__del_field_grouptagvalue_project__del_field_grouptagvalue_group__', '2019-05-31 07:57:31.941434+00');
-INSERT INTO public.south_migrationhistory VALUES (320, 'sentry', '0317_drop_grouptagvalue_constraints', '2019-05-31 07:57:32.486734+00');
-INSERT INTO public.south_migrationhistory VALUES (321, 'sentry', '0318_auto__add_field_deploy_notified', '2019-05-31 07:57:32.922585+00');
-INSERT INTO public.south_migrationhistory VALUES (322, 'sentry', '0319_auto__add_index_deploy_notified', '2019-05-31 07:57:33.37465+00');
-INSERT INTO public.south_migrationhistory VALUES (323, 'sentry', '0320_auto__add_index_eventtag_date_added', '2019-05-31 07:57:33.821976+00');
-INSERT INTO public.south_migrationhistory VALUES (324, 'sentry', '0321_auto__add_field_projectkey_rate_limit_count__add_field_projectkey_rate', '2019-05-31 07:57:34.383369+00');
-INSERT INTO public.south_migrationhistory VALUES (325, 'sentry', '0321_auto__add_unique_environment_organization_id_name', '2019-05-31 07:57:34.855217+00');
-INSERT INTO public.south_migrationhistory VALUES (326, 'sentry', '0322_merge_0321_migrations', '2019-05-31 07:57:35.410704+00');
-INSERT INTO public.south_migrationhistory VALUES (327, 'sentry', '0323_auto__add_unique_releaseenvironment_organization_id_release_id_environ', '2019-05-31 07:57:35.914741+00');
-INSERT INTO public.south_migrationhistory VALUES (328, 'sentry', '0324_auto__add_field_eventuser_name__add_field_userreport_event_user_id', '2019-05-31 07:57:36.372576+00');
-INSERT INTO public.south_migrationhistory VALUES (329, 'sentry', '0325_auto__add_scheduleddeletion__add_unique_scheduleddeletion_app_label_mo', '2019-05-31 07:57:36.889301+00');
-INSERT INTO public.south_migrationhistory VALUES (330, 'sentry', '0326_auto__add_field_groupsnooze_count__add_field_groupsnooze_window__add_f', '2019-05-31 07:57:37.546192+00');
-INSERT INTO public.south_migrationhistory VALUES (331, 'sentry', '0327_auto__add_field_release_commit_count__add_field_release_last_commit_id', '2019-05-31 07:57:38.064975+00');
-INSERT INTO public.south_migrationhistory VALUES (332, 'sentry', '0328_backfill_release_stats', '2019-05-31 07:57:38.577267+00');
-INSERT INTO public.south_migrationhistory VALUES (333, 'sentry', '0329_auto__del_dsymsymbol__del_unique_dsymsymbol_object_address__del_global', '2019-05-31 07:57:39.06341+00');
-INSERT INTO public.south_migrationhistory VALUES (334, 'sentry', '0330_auto__add_field_grouphash_state', '2019-05-31 07:57:39.558473+00');
-INSERT INTO public.south_migrationhistory VALUES (335, 'sentry', '0331_auto__del_index_releasecommit_project_id__del_index_releaseenvironment', '2019-05-31 07:57:40.043969+00');
-INSERT INTO public.south_migrationhistory VALUES (336, 'sentry', '0332_auto__add_featureadoption__add_unique_featureadoption_organization_fea', '2019-05-31 07:57:40.517225+00');
-INSERT INTO public.south_migrationhistory VALUES (337, 'sentry', '0333_auto__add_field_groupresolution_type__add_field_groupresolution_actor_', '2019-05-31 07:57:40.970022+00');
-INSERT INTO public.south_migrationhistory VALUES (338, 'sentry', '0334_auto__add_field_project_platform', '2019-05-31 07:57:42.661948+00');
-INSERT INTO public.south_migrationhistory VALUES (339, 'sentry', '0334_auto__add_scheduledjob', '2019-05-31 07:57:43.164844+00');
-INSERT INTO public.south_migrationhistory VALUES (340, 'sentry', '0335_auto__add_field_groupsnooze_actor_id', '2019-05-31 07:57:43.648175+00');
-INSERT INTO public.south_migrationhistory VALUES (341, 'sentry', '0336_auto__add_field_user_last_active', '2019-05-31 07:57:44.125476+00');
-INSERT INTO public.south_migrationhistory VALUES (342, 'sentry', '0337_fix_out_of_order_migrations', '2019-05-31 07:57:44.605237+00');
-INSERT INTO public.south_migrationhistory VALUES (343, 'sentry', '0338_fix_null_user_last_active', '2019-05-31 07:57:45.095974+00');
-INSERT INTO public.south_migrationhistory VALUES (344, 'sentry', '0339_backfill_first_project_feature', '2019-05-31 07:57:45.584257+00');
-INSERT INTO public.south_migrationhistory VALUES (345, 'sentry', '0340_auto__add_grouptombstone__add_field_grouphash_group_tombstone_id', '2019-05-31 07:57:46.144821+00');
-INSERT INTO public.south_migrationhistory VALUES (346, 'sentry', '0341_auto__add_organizationintegration__add_unique_organizationintegration_', '2019-05-31 07:57:46.81871+00');
-INSERT INTO public.south_migrationhistory VALUES (347, 'sentry', '0342_projectplatform', '2019-05-31 07:57:47.340352+00');
-INSERT INTO public.south_migrationhistory VALUES (348, 'sentry', '0343_auto__add_index_groupcommitresolution_commit_id', '2019-05-31 07:57:47.87706+00');
-INSERT INTO public.south_migrationhistory VALUES (349, 'sentry', '0344_add_index_ProjectPlatform_last_seen', '2019-05-31 07:57:48.406807+00');
-INSERT INTO public.south_migrationhistory VALUES (350, 'sentry', '0345_add_citext', '2019-05-31 07:57:48.950626+00');
-INSERT INTO public.south_migrationhistory VALUES (351, 'sentry', '0346_auto__del_field_tagkey_project__add_field_tagkey_project_id__del_uniqu', '2019-05-31 07:57:49.507669+00');
-INSERT INTO public.south_migrationhistory VALUES (352, 'sentry', '0347_auto__add_index_grouptagvalue_project_id__add_index_grouptagvalue_grou', '2019-05-31 07:57:50.046655+00');
-INSERT INTO public.south_migrationhistory VALUES (353, 'sentry', '0348_fix_project_key_rate_limit_window_unit', '2019-05-31 07:57:50.575079+00');
-INSERT INTO public.south_migrationhistory VALUES (354, 'sentry', '0349_drop_constraints_filterkey_filtervalue_grouptagkey', '2019-05-31 07:57:51.281668+00');
-INSERT INTO public.south_migrationhistory VALUES (355, 'sentry', '0350_auto__add_email', '2019-05-31 07:57:51.838122+00');
-INSERT INTO public.south_migrationhistory VALUES (356, 'sentry', '0351_backfillemail', '2019-05-31 07:57:52.394383+00');
-INSERT INTO public.south_migrationhistory VALUES (357, 'sentry', '0352_add_index_release_coalesce_date_released_date_added', '2019-05-31 07:57:52.927711+00');
-INSERT INTO public.south_migrationhistory VALUES (358, 'sentry', '0353_auto__del_field_eventuser_project__add_field_eventuser_project_id__del', '2019-05-31 07:57:53.561357+00');
-INSERT INTO public.south_migrationhistory VALUES (359, 'sentry', '0354_auto__chg_field_commitfilechange_filename', '2019-05-31 07:57:54.231078+00');
-INSERT INTO public.south_migrationhistory VALUES (360, 'sentry', '0355_auto__add_field_organizationintegration_config__add_field_organization', '2019-05-31 07:57:55.102077+00');
-INSERT INTO public.south_migrationhistory VALUES (361, 'sentry', '0356_auto__add_useridentity__add_unique_useridentity_user_identity__add_ide', '2019-05-31 07:57:55.781623+00');
-INSERT INTO public.south_migrationhistory VALUES (362, 'sentry', '0357_auto__add_projectteam__add_unique_projectteam_project_team', '2019-05-31 07:57:56.398248+00');
-INSERT INTO public.south_migrationhistory VALUES (363, 'sentry', '0358_auto__add_projectsymcachefile__add_unique_projectsymcachefile_project_', '2019-05-31 07:57:57.004769+00');
-INSERT INTO public.south_migrationhistory VALUES (364, 'sentry', '0359_auto__add_index_tagvalue_project_id_key_last_seen', '2019-05-31 07:57:57.562611+00');
-INSERT INTO public.south_migrationhistory VALUES (365, 'sentry', '0360_auto__add_groupshare', '2019-05-31 07:57:58.18374+00');
-INSERT INTO public.south_migrationhistory VALUES (366, 'sentry', '0361_auto__add_minidumpfile', '2019-05-31 07:57:58.807228+00');
-INSERT INTO public.south_migrationhistory VALUES (367, 'sentry', '0362_auto__add_userip__add_unique_userip_user_ip_address', '2019-05-31 07:57:59.430651+00');
-INSERT INTO public.south_migrationhistory VALUES (368, 'sentry', '0363_auto__add_grouplink__add_unique_grouplink_group_id_linked_type_linked_', '2019-05-31 07:58:00.068931+00');
-INSERT INTO public.south_migrationhistory VALUES (369, 'sentry', '0364_backfill_grouplink_from_groupcommitresolution', '2019-05-31 07:58:00.658782+00');
-INSERT INTO public.south_migrationhistory VALUES (370, 'sentry', '0365_auto__del_index_eventtag_project_id_key_id_value_id', '2019-05-31 07:58:01.224794+00');
-INSERT INTO public.south_migrationhistory VALUES (371, 'sentry', '0366_backfill_first_project_heroku', '2019-05-31 07:58:01.82711+00');
-INSERT INTO public.south_migrationhistory VALUES (372, 'sentry', '0367_auto__chg_field_release_ref__chg_field_release_version', '2019-05-31 07:58:02.744981+00');
-INSERT INTO public.south_migrationhistory VALUES (373, 'sentry', '0368_auto__add_deletedorganization__add_deletedteam__add_deletedproject', '2019-05-31 07:58:03.462994+00');
-INSERT INTO public.south_migrationhistory VALUES (374, 'sentry', '0369_remove_old_grouphash_last_processed_event_data', '2019-05-31 07:58:04.094464+00');
-INSERT INTO public.south_migrationhistory VALUES (375, 'sentry', '0370_correct_groupsnooze_windows', '2019-05-31 07:58:04.761234+00');
-INSERT INTO public.south_migrationhistory VALUES (376, 'sentry', '0371_auto__add_servicehook', '2019-05-31 07:58:05.557402+00');
-INSERT INTO public.south_migrationhistory VALUES (377, 'sentry', '0371_auto__del_minidumpfile', '2019-05-31 07:58:06.293716+00');
-INSERT INTO public.south_migrationhistory VALUES (378, 'sentry', '0372_resolve_migration_conflict', '2019-05-31 07:58:07.036492+00');
-INSERT INTO public.south_migrationhistory VALUES (379, 'sentry', '0373_backfill_projectteam', '2019-05-31 07:58:07.772021+00');
-INSERT INTO public.south_migrationhistory VALUES (380, 'sentry', '0374_auto__del_useridentity__del_unique_useridentity_user_identity__del_ide', '2019-05-31 07:58:08.621652+00');
-INSERT INTO public.south_migrationhistory VALUES (381, 'sentry', '0375_auto__add_identityprovider__add_unique_identityprovider_type_organizat', '2019-05-31 07:58:09.426176+00');
-INSERT INTO public.south_migrationhistory VALUES (382, 'sentry', '0376_auto__add_userpermission__add_unique_userpermission_user_permission', '2019-05-31 07:58:10.101273+00');
-INSERT INTO public.south_migrationhistory VALUES (383, 'sentry', '0377_auto__add_pullrequest__add_unique_pullrequest_repository_id_key__add_i', '2019-05-31 07:58:10.884051+00');
-INSERT INTO public.south_migrationhistory VALUES (384, 'sentry', '0378_delete_outdated_projectteam', '2019-05-31 07:58:11.61628+00');
-INSERT INTO public.south_migrationhistory VALUES (385, 'sentry', '0379_auto__add_unique_projectteam_project', '2019-05-31 07:58:12.342024+00');
-INSERT INTO public.south_migrationhistory VALUES (386, 'sentry', '0380_auto__chg_field_servicehook_url', '2019-05-31 07:58:14.633783+00');
-INSERT INTO public.south_migrationhistory VALUES (387, 'sentry', '0381_auto__del_field_deletedproject_team_name__del_field_deletedproject_tea', '2019-05-31 07:58:15.306224+00');
-INSERT INTO public.south_migrationhistory VALUES (388, 'sentry', '0382_auto__add_groupenvironment__add_unique_groupenvironment_group_id_envir', '2019-05-31 07:58:15.99951+00');
-INSERT INTO public.south_migrationhistory VALUES (389, 'sentry', '0383_auto__chg_field_project_team', '2019-05-31 07:58:16.671463+00');
-INSERT INTO public.south_migrationhistory VALUES (390, 'sentry', '0384_auto__del_unique_projectteam_project', '2019-05-31 07:58:17.40109+00');
-INSERT INTO public.south_migrationhistory VALUES (391, 'sentry', '0385_auto__add_field_rule_environment_id', '2019-05-31 07:58:18.07233+00');
-INSERT INTO public.south_migrationhistory VALUES (392, 'sentry', '0386_auto__del_unique_project_team_slug', '2019-05-31 07:58:18.794079+00');
-INSERT INTO public.south_migrationhistory VALUES (393, 'sentry', '0387_auto__add_field_groupassignee_team__chg_field_groupassignee_user', '2019-05-31 07:58:19.573726+00');
-INSERT INTO public.south_migrationhistory VALUES (394, 'sentry', '0388_auto__add_field_environmentproject_is_hidden', '2019-05-31 07:58:20.245081+00');
-INSERT INTO public.south_migrationhistory VALUES (395, 'sentry', '0389_auto__add_field_groupenvironment_first_release_id__add_index_groupenvi', '2019-05-31 07:58:20.927279+00');
-INSERT INTO public.south_migrationhistory VALUES (396, 'sentry', '0390_auto__add_field_userreport_environment', '2019-05-31 07:58:21.615295+00');
-INSERT INTO public.south_migrationhistory VALUES (397, 'sentry', '0391_auto__add_fileblobowner__add_unique_fileblobowner_blob_organization__a', '2019-05-31 07:58:22.342804+00');
-INSERT INTO public.south_migrationhistory VALUES (398, 'sentry', '0392_auto__add_projectownership', '2019-05-31 07:58:23.050358+00');
-INSERT INTO public.south_migrationhistory VALUES (399, 'sentry', '0393_auto__add_assistantactivity__add_unique_assistantactivity_user_guide_i', '2019-05-31 07:58:23.801495+00');
-INSERT INTO public.south_migrationhistory VALUES (400, 'sentry', '0394_auto__chg_field_project_team', '2019-05-31 07:58:24.652989+00');
-INSERT INTO public.south_migrationhistory VALUES (401, 'sentry', '0395_auto__add_releaseprojectenvironment__add_unique_releaseprojectenvironm', '2019-05-31 07:58:25.464515+00');
-INSERT INTO public.south_migrationhistory VALUES (402, 'sentry', '0396_auto__del_field_project_team', '2019-05-31 07:58:26.208222+00');
-INSERT INTO public.south_migrationhistory VALUES (403, 'sentry', '0397_auto__add_latestrelease__add_unique_latestrelease_repository_id_enviro', '2019-05-31 07:58:27.029519+00');
-INSERT INTO public.south_migrationhistory VALUES (404, 'sentry', '0397_auto__add_unique_identity_idp_user', '2019-05-31 07:58:27.756144+00');
-INSERT INTO public.south_migrationhistory VALUES (405, 'sentry', '0398_auto__add_pullrequestcommit__add_unique_pullrequestcommit_pull_request', '2019-05-31 07:58:28.615733+00');
-INSERT INTO public.south_migrationhistory VALUES (406, 'sentry', '0399_auto__chg_field_user_last_login__add_unique_identity_idp_user', '2019-05-31 07:58:29.537879+00');
-INSERT INTO public.south_migrationhistory VALUES (407, 'sentry', '0400_auto__add_projectredirect__add_unique_projectredirect_organization_red', '2019-05-31 07:58:30.379557+00');
-INSERT INTO public.south_migrationhistory VALUES (408, 'sentry', '0401_auto__chg_field_projectdsymfile_uuid', '2019-05-31 07:58:31.270201+00');
-INSERT INTO public.south_migrationhistory VALUES (409, 'sentry', '0402_auto__add_field_organizationintegration_date_added__add_field_identity', '2019-05-31 07:58:32.037203+00');
-INSERT INTO public.south_migrationhistory VALUES (410, 'sentry', '0403_auto__add_teamavatar', '2019-05-31 07:58:32.878126+00');
-INSERT INTO public.south_migrationhistory VALUES (411, 'sentry', '0404_auto__del_unique_environment_project_id_name', '2019-05-31 07:58:33.694431+00');
-INSERT INTO public.south_migrationhistory VALUES (412, 'sentry', '0405_auto__add_field_user_flags', '2019-05-31 07:58:34.492269+00');
-INSERT INTO public.south_migrationhistory VALUES (413, 'sentry', '0406_auto__add_projectavatar', '2019-05-31 07:58:35.337437+00');
-INSERT INTO public.south_migrationhistory VALUES (414, 'sentry', '0407_auto__add_field_identityprovider_external_id__add_unique_identityprovi', '2019-05-31 07:58:36.221333+00');
-INSERT INTO public.south_migrationhistory VALUES (415, 'sentry', '0408_identity_provider_external_id', '2019-05-31 07:58:37.014398+00');
-INSERT INTO public.south_migrationhistory VALUES (416, 'sentry', '0409_auto__add_field_releaseprojectenvironment_last_deploy_id', '2019-05-31 07:58:37.828402+00');
-INSERT INTO public.south_migrationhistory VALUES (417, 'sentry', '0410_auto__del_unique_identityprovider_type_organization', '2019-05-31 07:58:38.652583+00');
-INSERT INTO public.south_migrationhistory VALUES (418, 'sentry', '0411_auto__add_field_projectkey_data', '2019-05-31 07:58:39.51492+00');
-INSERT INTO public.south_migrationhistory VALUES (419, 'sentry', '0412_auto__chg_field_file_name', '2019-05-31 07:58:40.461948+00');
-INSERT INTO public.south_migrationhistory VALUES (420, 'sentry', '0413_auto__add_externalissue__add_unique_externalissue_organization_id_inte', '2019-05-31 07:58:41.306319+00');
-INSERT INTO public.south_migrationhistory VALUES (421, 'sentry', '0414_backfill_release_project_environment_last_deploy_id', '2019-05-31 07:58:42.142838+00');
-INSERT INTO public.south_migrationhistory VALUES (422, 'sentry', '0415_auto__add_relay', '2019-05-31 07:58:43.06128+00');
-INSERT INTO public.south_migrationhistory VALUES (423, 'sentry', '0416_auto__del_field_identityprovider_organization__add_field_identityprovi', '2019-05-31 07:58:44.103138+00');
-INSERT INTO public.south_migrationhistory VALUES (424, 'sentry', '0417_migrate_identities', '2019-05-31 07:58:45.016121+00');
-INSERT INTO public.south_migrationhistory VALUES (425, 'sentry', '0418_delete_old_idps', '2019-05-31 07:58:45.886371+00');
-INSERT INTO public.south_migrationhistory VALUES (426, 'sentry', '0419_auto__add_unique_identityprovider_type_external_id', '2019-05-31 07:58:46.762356+00');
-INSERT INTO public.south_migrationhistory VALUES (427, 'sentry', '0420_auto__chg_field_identityprovider_organization_id', '2019-05-31 07:58:47.747932+00');
-INSERT INTO public.south_migrationhistory VALUES (428, 'sentry', '0421_auto__del_field_identityprovider_organization_id__del_unique_identityp', '2019-05-31 07:58:48.642198+00');
-INSERT INTO public.south_migrationhistory VALUES (429, 'sentry', '0422_auto__add_grouphashtombstone__add_unique_grouphashtombstone_project_ha', '2019-05-31 07:58:49.496718+00');
-INSERT INTO public.south_migrationhistory VALUES (430, 'sentry', '0423_auto__add_index_grouphashtombstone_deleted_at', '2019-05-31 07:58:50.337101+00');
-INSERT INTO public.south_migrationhistory VALUES (431, 'sentry', '0424_auto__add_field_integration_status', '2019-05-31 07:58:51.219971+00');
-INSERT INTO public.south_migrationhistory VALUES (432, 'sentry', '0425_auto__add_index_pullrequest_organization_id_merge_commit_sha', '2019-05-31 07:58:52.096838+00');
-INSERT INTO public.south_migrationhistory VALUES (433, 'sentry', '0425_remove_invalid_github_idps', '2019-05-31 07:58:52.946332+00');
-INSERT INTO public.south_migrationhistory VALUES (434, 'sentry', '0426_auto__add_sentryappinstallation__add_sentryapp__add_field_user_is_sent', '2019-05-31 07:58:53.995159+00');
-INSERT INTO public.south_migrationhistory VALUES (435, 'sentry', '0427_auto__add_eventattachment__add_unique_eventattachment_project_id_event', '2019-05-31 07:58:54.978936+00');
-INSERT INTO public.south_migrationhistory VALUES (436, 'sentry', '0428_auto__add_index_eventattachment_project_id_date_added', '2019-05-31 07:58:55.871478+00');
-INSERT INTO public.south_migrationhistory VALUES (437, 'sentry', '0429_auto__add_integrationexternalproject__add_unique_integrationexternalpr', '2019-05-31 07:58:58.670422+00');
-INSERT INTO public.south_migrationhistory VALUES (438, 'sentry', '0430_auto__add_field_organizationintegration_status', '2019-05-31 07:58:59.648985+00');
-INSERT INTO public.south_migrationhistory VALUES (439, 'sentry', '0431_auto__add_field_externalissue_metadata', '2019-05-31 07:59:00.617988+00');
-INSERT INTO public.south_migrationhistory VALUES (440, 'sentry', '0432_auto__add_field_relay_is_internal', '2019-05-31 07:59:01.576273+00');
-INSERT INTO public.south_migrationhistory VALUES (441, 'sentry', '0432_auto__add_index_userreport_date_added__add_index_eventattachment_date_', '2019-05-31 07:59:02.552235+00');
-INSERT INTO public.south_migrationhistory VALUES (442, 'sentry', '0433_auto__add_field_relay_is_internal__add_field_userip_country_code__add_', '2019-05-31 07:59:03.503273+00');
-INSERT INTO public.south_migrationhistory VALUES (443, 'sentry', '0434_auto__add_discoversavedqueryproject__add_unique_discoversavedqueryproj', '2019-05-31 07:59:04.615244+00');
-INSERT INTO public.south_migrationhistory VALUES (444, 'sentry', '0435_auto__add_field_discoversavedquery_created_by', '2019-05-31 07:59:05.74603+00');
-INSERT INTO public.south_migrationhistory VALUES (445, 'sentry', '0436_rename_projectdsymfile_to_projectdebugfile', '2019-05-31 07:59:06.846646+00');
-INSERT INTO public.south_migrationhistory VALUES (446, 'sentry', '0437_auto__add_field_sentryapp_status', '2019-05-31 07:59:07.90958+00');
-INSERT INTO public.south_migrationhistory VALUES (447, 'sentry', '0438_auto__add_index_sentryapp_status__chg_field_sentryapp_proxy_user__chg_', '2019-05-31 07:59:09.245131+00');
-INSERT INTO public.south_migrationhistory VALUES (448, 'sentry', '0439_auto__chg_field_sentryapp_owner', '2019-05-31 07:59:10.383654+00');
-INSERT INTO public.south_migrationhistory VALUES (449, 'sentry', '0440_auto__del_unique_projectdebugfile_project_debug_id__add_index_projectd', '2019-05-31 07:59:11.458743+00');
-INSERT INTO public.south_migrationhistory VALUES (450, 'sentry', '0441_auto__add_field_projectdebugfile_data', '2019-05-31 07:59:12.451575+00');
-INSERT INTO public.south_migrationhistory VALUES (451, 'sentry', '0442_auto__add_projectcficachefile__add_unique_projectcficachefile_project_', '2019-05-31 07:59:13.610906+00');
-INSERT INTO public.south_migrationhistory VALUES (452, 'sentry', '0443_auto__add_field_organizationmember_token_expires_at', '2019-05-31 07:59:14.624837+00');
-INSERT INTO public.south_migrationhistory VALUES (453, 'sentry', '0443_auto__del_dsymapp__del_unique_dsymapp_project_platform_app_id__del_ver', '2019-05-31 07:59:15.721807+00');
-INSERT INTO public.south_migrationhistory VALUES (454, 'sentry', '0444_auto__add_sentryappavatar__add_field_sentryapp_redirect_url__add_field', '2019-05-31 07:59:17.074839+00');
-INSERT INTO public.south_migrationhistory VALUES (455, 'sentry', '0445_auto__add_promptsactivity__add_unique_promptsactivity_user_feature_org', '2019-05-31 07:59:18.238617+00');
-INSERT INTO public.south_migrationhistory VALUES (456, 'sentry', '0446_auto__add_index_promptsactivity_project_id', '2019-05-31 07:59:19.320995+00');
-INSERT INTO public.south_migrationhistory VALUES (457, 'sentry', '0447_auto__del_field_promptsactivity_organization__add_field_promptsactivit', '2019-05-31 07:59:20.593332+00');
-INSERT INTO public.south_migrationhistory VALUES (458, 'sentry', '0448_auto__add_field_sentryapp_is_alertable', '2019-05-31 07:59:21.814819+00');
-INSERT INTO public.south_migrationhistory VALUES (459, 'sentry', '0449_auto__chg_field_release_owner', '2019-05-31 07:59:22.931637+00');
-INSERT INTO public.south_migrationhistory VALUES (460, 'sentry', '0450_auto__del_grouphashtombstone__del_unique_grouphashtombstone_project_ha', '2019-05-31 07:59:24.051154+00');
-INSERT INTO public.south_migrationhistory VALUES (461, 'sentry', '0451_auto__del_field_projectbookmark_project_id__add_field_projectbookmark_', '2019-05-31 07:59:25.081074+00');
-INSERT INTO public.south_migrationhistory VALUES (462, 'sentry', '0452_auto__add_field_sentryapp_events', '2019-05-31 07:59:26.085882+00');
-INSERT INTO public.south_migrationhistory VALUES (463, 'sentry', '0452_auto__del_field_releaseenvironment_organization_id__del_field_releasee', '2019-05-31 07:59:27.083782+00');
-INSERT INTO public.south_migrationhistory VALUES (464, 'sentry', '0453_auto__add_index_releasefile_release_name', '2019-05-31 07:59:28.121267+00');
-INSERT INTO public.south_migrationhistory VALUES (465, 'sentry', '0454_resolve_duplicate_0452', '2019-05-31 07:59:29.185205+00');
-INSERT INTO public.south_migrationhistory VALUES (466, 'sentry', '0455_auto__add_field_groupenvironment_first_seen', '2019-05-31 07:59:30.271208+00');
-INSERT INTO public.south_migrationhistory VALUES (467, 'sentry', '0456_auto__add_dashboard__add_unique_dashboard_organization_title__add_widg', '2019-05-31 07:59:31.490794+00');
-INSERT INTO public.south_migrationhistory VALUES (468, 'sentry', '0457_auto__add_field_savedsearch_is_global__chg_field_savedsearch_project__', '2019-05-31 07:59:32.549163+00');
-INSERT INTO public.south_migrationhistory VALUES (469, 'sentry', '0457_auto__add_monitorcheckin__add_monitor__add_index_monitor_type_next_che', '2019-05-31 07:59:33.787615+00');
-INSERT INTO public.south_migrationhistory VALUES (470, 'sentry', '0458_global_searches_data_migration', '2019-05-31 07:59:34.93007+00');
-INSERT INTO public.south_migrationhistory VALUES (471, 'sentry', '0459_global_searches_unique_constraint', '2019-05-31 07:59:36.147281+00');
-INSERT INTO public.south_migrationhistory VALUES (472, 'sentry', '0460_auto__add_field_servicehook_organization_id', '2019-05-31 07:59:37.263139+00');
-INSERT INTO public.south_migrationhistory VALUES (473, 'sentry', '0461_event_attachment_indexes', '2019-05-31 07:59:38.360951+00');
-INSERT INTO public.south_migrationhistory VALUES (474, 'sentry', '0462_auto__add_servicehookproject', '2019-05-31 07:59:39.541777+00');
-INSERT INTO public.south_migrationhistory VALUES (475, 'sentry', '0462_releaseenvironment_project_id', '2019-05-31 07:59:40.688973+00');
-INSERT INTO public.south_migrationhistory VALUES (476, 'sentry', '0463_backfill_service_hook_project', '2019-05-31 07:59:41.824025+00');
-INSERT INTO public.south_migrationhistory VALUES (477, 'sentry', '0464_auto__add_sentryappcomponent__add_field_sentryapp_schema', '2019-05-31 07:59:43.081476+00');
-INSERT INTO public.south_migrationhistory VALUES (478, 'sentry', '0464_groupenvironment_foreignkeys', '2019-05-31 07:59:44.302006+00');
-INSERT INTO public.south_migrationhistory VALUES (479, 'sentry', '0465_sync', '2019-05-31 07:59:45.433689+00');
-INSERT INTO public.south_migrationhistory VALUES (480, 'sentry', '0466_auto__add_platformexternalissue__add_unique_platformexternalissue_grou', '2019-05-31 07:59:46.710793+00');
-INSERT INTO public.south_migrationhistory VALUES (481, 'sentry', '0467_backfill_integration_status', '2019-05-31 07:59:47.912494+00');
-INSERT INTO public.south_migrationhistory VALUES (482, 'sentry', '0468_auto__add_field_projectdebugfile_code_id__add_index_projectdebugfile_p', '2019-05-31 07:59:49.210828+00');
-INSERT INTO public.south_migrationhistory VALUES (483, 'sentry', '0468_recent_search', '2019-05-31 07:59:50.56376+00');
-INSERT INTO public.south_migrationhistory VALUES (484, 'sentry', '0469_fix_state', '2019-05-31 07:59:51.739434+00');
-INSERT INTO public.south_migrationhistory VALUES (485, 'sentry', '0470_org_saved_search', '2019-05-31 07:59:52.968621+00');
-INSERT INTO public.south_migrationhistory VALUES (486, 'sentry', '0471_global_saved_search_types', '2019-05-31 07:59:54.344528+00');
-INSERT INTO public.south_migrationhistory VALUES (487, 'sentry', '0472_auto__add_field_sentryapp_author', '2019-05-31 07:59:55.652291+00');
-INSERT INTO public.south_migrationhistory VALUES (488, 'sentry.nodestore', '0001_initial', '2019-05-31 08:00:00.684944+00');
-INSERT INTO public.south_migrationhistory VALUES (489, 'sentry.search', '0001_initial', '2019-05-31 08:00:01.744478+00');
-INSERT INTO public.south_migrationhistory VALUES (490, 'sentry.search', '0002_auto__del_searchtoken__del_unique_searchtoken_document_field_token__de', '2019-05-31 08:00:01.867649+00');
-INSERT INTO public.south_migrationhistory VALUES (491, 'social_auth', '0001_initial', '2019-05-31 08:00:06.077103+00');
-INSERT INTO public.south_migrationhistory VALUES (492, 'social_auth', '0002_auto__add_unique_nonce_timestamp_salt_server_url__add_unique_associati', '2019-05-31 08:00:06.655424+00');
-INSERT INTO public.south_migrationhistory VALUES (493, 'social_auth', '0003_auto__del_nonce__del_unique_nonce_server_url_timestamp_salt__del_assoc', '2019-05-31 08:00:06.81815+00');
-INSERT INTO public.south_migrationhistory VALUES (494, 'social_auth', '0004_auto__del_unique_usersocialauth_provider_uid__add_unique_usersocialaut', '2019-05-31 08:00:06.94952+00');
-INSERT INTO public.south_migrationhistory VALUES (495, 'sentry.tagstore', '0001_initial', '2019-05-31 08:00:07.681709+00');
-INSERT INTO public.south_migrationhistory VALUES (496, 'sentry.tagstore', '0002_auto__del_tagkey__del_unique_tagkey_project_id_environment_id_key__del', '2019-05-31 08:00:08.064827+00');
-INSERT INTO public.south_migrationhistory VALUES (497, 'sentry.tagstore', '0003_auto__add_tagkey__add_unique_tagkey_project_id_environment_id_key__add', '2019-05-31 08:00:08.587117+00');
-INSERT INTO public.south_migrationhistory VALUES (498, 'sentry.tagstore', '0004_auto__del_tagkey__del_unique_tagkey_project_id_environment_id_key__del', '2019-05-31 08:00:08.939704+00');
-INSERT INTO public.south_migrationhistory VALUES (499, 'sentry.tagstore', '0005_auto__add_tagvalue__add_unique_tagvalue_project_id__key_value__add_ind', '2019-05-31 08:00:09.481516+00');
-INSERT INTO public.south_migrationhistory VALUES (500, 'sentry.tagstore', '0006_auto__del_unique_eventtag_event_id_key_value__add_unique_eventtag_proj', '2019-05-31 08:00:09.605401+00');
-INSERT INTO public.south_migrationhistory VALUES (501, 'sentry.tagstore', '0007_auto__chg_field_tagkey_environment_id__chg_field_tagkey_project_id__ch', '2019-05-31 08:00:11.485705+00');
-INSERT INTO public.south_migrationhistory VALUES (502, 'sentry.tagstore', '0008_auto__chg_field_tagkey_environment_id', '2019-05-31 08:00:11.975257+00');
+INSERT INTO public.south_migrationhistory VALUES (1, 'sentry', '0001_initial', '2019-07-20 13:04:46.307111+00');
+INSERT INTO public.south_migrationhistory VALUES (2, 'sentry', '0002_auto__del_field_groupedmessage_url__chg_field_groupedmessage_view__chg', '2019-07-20 13:04:46.378967+00');
+INSERT INTO public.south_migrationhistory VALUES (3, 'sentry', '0003_auto__add_field_message_group__del_field_groupedmessage_server_name', '2019-07-20 13:04:46.41571+00');
+INSERT INTO public.south_migrationhistory VALUES (4, 'sentry', '0004_auto__add_filtervalue__add_unique_filtervalue_key_value', '2019-07-20 13:04:46.465175+00');
+INSERT INTO public.south_migrationhistory VALUES (5, 'sentry', '0005_auto', '2019-07-20 13:04:46.496612+00');
+INSERT INTO public.south_migrationhistory VALUES (6, 'sentry', '0006_auto', '2019-07-20 13:04:46.511376+00');
+INSERT INTO public.south_migrationhistory VALUES (7, 'sentry', '0007_auto__add_field_message_site', '2019-07-20 13:04:46.563101+00');
+INSERT INTO public.south_migrationhistory VALUES (8, 'sentry', '0008_auto__chg_field_message_view__add_field_groupedmessage_data__chg_field', '2019-07-20 13:04:46.682857+00');
+INSERT INTO public.south_migrationhistory VALUES (9, 'sentry', '0009_auto__add_field_message_message_id', '2019-07-20 13:04:46.724355+00');
+INSERT INTO public.south_migrationhistory VALUES (10, 'sentry', '0010_auto__add_messageindex__add_unique_messageindex_column_value_object_id', '2019-07-20 13:04:46.781947+00');
+INSERT INTO public.south_migrationhistory VALUES (11, 'sentry', '0011_auto__add_field_groupedmessage_score', '2019-07-20 13:04:46.973679+00');
+INSERT INTO public.south_migrationhistory VALUES (12, 'sentry', '0012_auto', '2019-07-20 13:04:47.00381+00');
+INSERT INTO public.south_migrationhistory VALUES (13, 'sentry', '0013_auto__add_messagecountbyminute__add_unique_messagecountbyminute_group_', '2019-07-20 13:04:47.103511+00');
+INSERT INTO public.south_migrationhistory VALUES (14, 'sentry', '0014_auto', '2019-07-20 13:04:47.129675+00');
+INSERT INTO public.south_migrationhistory VALUES (15, 'sentry', '0014_auto__add_project__add_projectmember__add_unique_projectmember_project', '2019-07-20 13:04:47.273125+00');
+INSERT INTO public.south_migrationhistory VALUES (16, 'sentry', '0015_auto__add_field_message_project__add_field_messagecountbyminute_projec', '2019-07-20 13:04:47.513006+00');
+INSERT INTO public.south_migrationhistory VALUES (17, 'sentry', '0016_auto__add_field_projectmember_is_superuser', '2019-07-20 13:04:47.590125+00');
+INSERT INTO public.south_migrationhistory VALUES (18, 'sentry', '0017_auto__add_field_projectmember_api_key', '2019-07-20 13:04:47.65111+00');
+INSERT INTO public.south_migrationhistory VALUES (19, 'sentry', '0018_auto__chg_field_project_owner', '2019-07-20 13:04:47.77563+00');
+INSERT INTO public.south_migrationhistory VALUES (20, 'sentry', '0019_auto__del_field_projectmember_api_key__add_field_projectmember_public_', '2019-07-20 13:04:47.915105+00');
+INSERT INTO public.south_migrationhistory VALUES (21, 'sentry', '0020_auto__add_projectdomain__add_unique_projectdomain_project_domain', '2019-07-20 13:04:48.021758+00');
+INSERT INTO public.south_migrationhistory VALUES (22, 'sentry', '0021_auto__del_message__del_groupedmessage__del_unique_groupedmessage_proje', '2019-07-20 13:04:48.110992+00');
+INSERT INTO public.south_migrationhistory VALUES (23, 'sentry', '0022_auto__del_field_group_class_name__del_field_group_traceback__del_field', '2019-07-20 13:04:48.155418+00');
+INSERT INTO public.south_migrationhistory VALUES (24, 'sentry', '0023_auto__add_field_event_time_spent', '2019-07-20 13:04:48.234546+00');
+INSERT INTO public.south_migrationhistory VALUES (25, 'sentry', '0024_auto__add_field_group_time_spent_total__add_field_group_time_spent_cou', '2019-07-20 13:04:48.61839+00');
+INSERT INTO public.south_migrationhistory VALUES (26, 'sentry', '0025_auto__add_field_messagecountbyminute_time_spent_total__add_field_messa', '2019-07-20 13:04:48.786046+00');
+INSERT INTO public.south_migrationhistory VALUES (27, 'sentry', '0026_auto__add_field_project_status', '2019-07-20 13:04:48.865845+00');
+INSERT INTO public.south_migrationhistory VALUES (28, 'sentry', '0027_auto__chg_field_event_server_name', '2019-07-20 13:04:48.948174+00');
+INSERT INTO public.south_migrationhistory VALUES (29, 'sentry', '0028_auto__add_projectoptions__add_unique_projectoptions_project_key_value', '2019-07-20 13:04:49.027503+00');
+INSERT INTO public.south_migrationhistory VALUES (30, 'sentry', '0029_auto__del_field_projectmember_is_superuser__del_field_projectmember_pe', '2019-07-20 13:04:49.149817+00');
+INSERT INTO public.south_migrationhistory VALUES (31, 'sentry', '0030_auto__add_view__chg_field_event_group', '2019-07-20 13:04:49.362554+00');
+INSERT INTO public.south_migrationhistory VALUES (32, 'sentry', '0031_auto__add_field_view_verbose_name__add_field_view_verbose_name_plural_', '2019-07-20 13:04:49.471772+00');
+INSERT INTO public.south_migrationhistory VALUES (33, 'sentry', '0032_auto__add_eventmeta', '2019-07-20 13:04:49.612081+00');
+INSERT INTO public.south_migrationhistory VALUES (34, 'sentry', '0033_auto__add_option__add_unique_option_key_value', '2019-07-20 13:04:49.696467+00');
+INSERT INTO public.south_migrationhistory VALUES (35, 'sentry', '0034_auto__add_groupbookmark__add_unique_groupbookmark_project_user_group', '2019-07-20 13:04:49.812315+00');
+INSERT INTO public.south_migrationhistory VALUES (36, 'sentry', '0034_auto__add_unique_option_key__del_unique_option_value_key__del_unique_g', '2019-07-20 13:04:49.967881+00');
+INSERT INTO public.south_migrationhistory VALUES (37, 'sentry', '0036_auto__chg_field_option_value__chg_field_projectoption_value', '2019-07-20 13:04:50.106054+00');
+INSERT INTO public.south_migrationhistory VALUES (38, 'sentry', '0037_auto__add_unique_option_key__del_unique_option_value_key__del_unique_g', '2019-07-20 13:04:50.221605+00');
+INSERT INTO public.south_migrationhistory VALUES (39, 'sentry', '0038_auto__add_searchtoken__add_unique_searchtoken_document_field_token__ad', '2019-07-20 13:04:50.385898+00');
+INSERT INTO public.south_migrationhistory VALUES (40, 'sentry', '0039_auto__add_field_searchdocument_status', '2019-07-20 13:04:50.524042+00');
+INSERT INTO public.south_migrationhistory VALUES (41, 'sentry', '0040_auto__del_unique_event_event_id__add_unique_event_project_event_id', '2019-07-20 13:04:50.645746+00');
+INSERT INTO public.south_migrationhistory VALUES (42, 'sentry', '0041_auto__add_field_messagefiltervalue_last_seen__add_field_messagefilterv', '2019-07-20 13:04:50.786839+00');
+INSERT INTO public.south_migrationhistory VALUES (43, 'sentry', '0042_auto__add_projectcountbyminute__add_unique_projectcountbyminute_projec', '2019-07-20 13:04:50.961866+00');
+INSERT INTO public.south_migrationhistory VALUES (44, 'sentry', '0043_auto__chg_field_option_value__chg_field_projectoption_value', '2019-07-20 13:04:51.068961+00');
+INSERT INTO public.south_migrationhistory VALUES (45, 'sentry', '0044_auto__add_field_projectmember_is_active', '2019-07-20 13:04:51.197858+00');
+INSERT INTO public.south_migrationhistory VALUES (46, 'sentry', '0045_auto__add_pendingprojectmember__add_unique_pendingprojectmember_projec', '2019-07-20 13:04:51.274565+00');
+INSERT INTO public.south_migrationhistory VALUES (47, 'sentry', '0046_auto__add_teammember__add_unique_teammember_team_user__add_team__add_p', '2019-07-20 13:04:51.521576+00');
+INSERT INTO public.south_migrationhistory VALUES (48, 'sentry', '0047_migrate_project_slugs', '2019-07-20 13:04:51.840177+00');
+INSERT INTO public.south_migrationhistory VALUES (49, 'sentry', '0048_migrate_project_keys', '2019-07-20 13:04:51.892411+00');
+INSERT INTO public.south_migrationhistory VALUES (50, 'sentry', '0049_create_default_project_keys', '2019-07-20 13:04:51.950054+00');
+INSERT INTO public.south_migrationhistory VALUES (51, 'sentry', '0050_remove_project_keys_from_members', '2019-07-20 13:04:51.999358+00');
+INSERT INTO public.south_migrationhistory VALUES (52, 'sentry', '0051_auto__del_pendingprojectmember__del_unique_pendingprojectmember_projec', '2019-07-20 13:04:52.093672+00');
+INSERT INTO public.south_migrationhistory VALUES (53, 'sentry', '0052_migrate_project_members', '2019-07-20 13:04:52.165853+00');
+INSERT INTO public.south_migrationhistory VALUES (54, 'sentry', '0053_auto__del_projectmember__del_unique_projectmember_project_user', '2019-07-20 13:04:52.237761+00');
+INSERT INTO public.south_migrationhistory VALUES (55, 'sentry', '0054_fix_project_keys', '2019-07-20 13:04:52.283929+00');
+INSERT INTO public.south_migrationhistory VALUES (56, 'sentry', '0055_auto__del_projectdomain__del_unique_projectdomain_project_domain', '2019-07-20 13:04:52.37404+00');
+INSERT INTO public.south_migrationhistory VALUES (57, 'sentry', '0056_auto__add_field_group_resolved_at', '2019-07-20 13:04:52.46902+00');
+INSERT INTO public.south_migrationhistory VALUES (58, 'sentry', '0057_auto__add_field_group_active_at', '2019-07-20 13:04:52.541415+00');
+INSERT INTO public.south_migrationhistory VALUES (59, 'sentry', '0058_auto__add_useroption__add_unique_useroption_user_project_key', '2019-07-20 13:04:52.653746+00');
+INSERT INTO public.south_migrationhistory VALUES (60, 'sentry', '0059_auto__add_filterkey__add_unique_filterkey_project_key', '2019-07-20 13:04:52.749161+00');
+INSERT INTO public.south_migrationhistory VALUES (61, 'sentry', '0060_fill_filter_key', '2019-07-20 13:04:52.799478+00');
+INSERT INTO public.south_migrationhistory VALUES (62, 'sentry', '0061_auto__add_field_group_group_id__add_field_group_is_public', '2019-07-20 13:04:53.021028+00');
+INSERT INTO public.south_migrationhistory VALUES (63, 'sentry', '0062_correct_del_index_sentry_groupedmessage_logger__view__checksum', '2019-07-20 13:04:53.073812+00');
+INSERT INTO public.south_migrationhistory VALUES (64, 'sentry', '0063_auto', '2019-07-20 13:04:53.121522+00');
+INSERT INTO public.south_migrationhistory VALUES (65, 'sentry', '0064_index_checksum', '2019-07-20 13:04:53.178179+00');
+INSERT INTO public.south_migrationhistory VALUES (66, 'sentry', '0065_create_default_project_key', '2019-07-20 13:04:53.233982+00');
+INSERT INTO public.south_migrationhistory VALUES (67, 'sentry', '0066_auto__del_view', '2019-07-20 13:04:53.285319+00');
+INSERT INTO public.south_migrationhistory VALUES (68, 'sentry', '0067_auto__add_field_group_platform__add_field_event_platform', '2019-07-20 13:04:53.331726+00');
+INSERT INTO public.south_migrationhistory VALUES (69, 'sentry', '0068_auto__add_field_projectkey_user_added__add_field_projectkey_date_added', '2019-07-20 13:04:53.39913+00');
+INSERT INTO public.south_migrationhistory VALUES (70, 'sentry', '0069_auto__add_lostpasswordhash', '2019-07-20 13:04:53.465034+00');
+INSERT INTO public.south_migrationhistory VALUES (71, 'sentry', '0070_projectoption_key_length', '2019-07-20 13:04:53.529557+00');
+INSERT INTO public.south_migrationhistory VALUES (72, 'sentry', '0071_auto__add_field_group_users_seen', '2019-07-20 13:04:53.810691+00');
+INSERT INTO public.south_migrationhistory VALUES (73, 'sentry', '0072_auto__add_affecteduserbygroup__add_unique_affecteduserbygroup_project_', '2019-07-20 13:04:53.944101+00');
+INSERT INTO public.south_migrationhistory VALUES (74, 'sentry', '0073_auto__add_field_project_platform', '2019-07-20 13:04:54.038512+00');
+INSERT INTO public.south_migrationhistory VALUES (75, 'sentry', '0074_correct_filtervalue_index', '2019-07-20 13:04:54.120404+00');
+INSERT INTO public.south_migrationhistory VALUES (76, 'sentry', '0075_add_groupbookmark_index', '2019-07-20 13:04:54.175553+00');
+INSERT INTO public.south_migrationhistory VALUES (77, 'sentry', '0076_add_groupmeta_index', '2019-07-20 13:04:54.239749+00');
+INSERT INTO public.south_migrationhistory VALUES (78, 'sentry', '0077_auto__add_trackeduser__add_unique_trackeduser_project_ident', '2019-07-20 13:04:54.360032+00');
+INSERT INTO public.south_migrationhistory VALUES (79, 'sentry', '0078_auto__add_field_affecteduserbygroup_tuser', '2019-07-20 13:04:54.424009+00');
+INSERT INTO public.south_migrationhistory VALUES (80, 'sentry', '0079_auto__del_unique_affecteduserbygroup_project_ident_group__add_unique_a', '2019-07-20 13:04:54.563154+00');
+INSERT INTO public.south_migrationhistory VALUES (81, 'sentry', '0080_auto__chg_field_affecteduserbygroup_ident', '2019-07-20 13:04:54.644678+00');
+INSERT INTO public.south_migrationhistory VALUES (82, 'sentry', '0081_fill_trackeduser', '2019-07-20 13:04:54.710102+00');
+INSERT INTO public.south_migrationhistory VALUES (83, 'sentry', '0082_auto__add_activity__add_field_group_num_comments__add_field_event_num_', '2019-07-20 13:04:55.278815+00');
+INSERT INTO public.south_migrationhistory VALUES (84, 'sentry', '0083_migrate_dupe_groups', '2019-07-20 13:04:55.346607+00');
+INSERT INTO public.south_migrationhistory VALUES (85, 'sentry', '0084_auto__del_unique_group_project_checksum_logger_culprit__add_unique_gro', '2019-07-20 13:04:55.41809+00');
+INSERT INTO public.south_migrationhistory VALUES (86, 'sentry', '0085_auto__del_unique_project_slug__add_unique_project_slug_team', '2019-07-20 13:04:55.489941+00');
+INSERT INTO public.south_migrationhistory VALUES (87, 'sentry', '0086_auto__add_field_team_date_added', '2019-07-20 13:04:55.561666+00');
+INSERT INTO public.south_migrationhistory VALUES (88, 'sentry', '0087_auto__del_messagefiltervalue__del_unique_messagefiltervalue_project_ke', '2019-07-20 13:04:55.614113+00');
+INSERT INTO public.south_migrationhistory VALUES (89, 'sentry', '0088_auto__del_messagecountbyminute__del_unique_messagecountbyminute_projec', '2019-07-20 13:04:55.670893+00');
+INSERT INTO public.south_migrationhistory VALUES (90, 'sentry', '0089_auto__add_accessgroup__add_unique_accessgroup_team_name', '2019-07-20 13:04:55.854306+00');
+INSERT INTO public.south_migrationhistory VALUES (91, 'sentry', '0090_auto__add_grouptagkey__add_unique_grouptagkey_project_group_key__add_f', '2019-07-20 13:04:56.027004+00');
+INSERT INTO public.south_migrationhistory VALUES (92, 'sentry', '0091_auto__add_alert', '2019-07-20 13:04:56.12788+00');
+INSERT INTO public.south_migrationhistory VALUES (93, 'sentry', '0092_auto__add_alertrelatedgroup__add_unique_alertrelatedgroup_group_alert', '2019-07-20 13:04:56.244399+00');
+INSERT INTO public.south_migrationhistory VALUES (94, 'sentry', '0093_auto__add_field_alert_status', '2019-07-20 13:04:56.356281+00');
+INSERT INTO public.south_migrationhistory VALUES (95, 'sentry', '0094_auto__add_eventmapping__add_unique_eventmapping_project_event_id', '2019-07-20 13:04:56.478065+00');
+INSERT INTO public.south_migrationhistory VALUES (96, 'sentry', '0095_rebase', '2019-07-20 13:04:56.550019+00');
+INSERT INTO public.south_migrationhistory VALUES (97, 'sentry', '0096_auto__add_field_tagvalue_data', '2019-07-20 13:04:56.623541+00');
+INSERT INTO public.south_migrationhistory VALUES (98, 'sentry', '0097_auto__del_affecteduserbygroup__del_unique_affecteduserbygroup_project_', '2019-07-20 13:04:57.122894+00');
+INSERT INTO public.south_migrationhistory VALUES (99, 'sentry', '0098_auto__add_user__chg_field_team_owner__chg_field_activity_user__chg_fie', '2019-07-20 13:04:57.208491+00');
+INSERT INTO public.south_migrationhistory VALUES (100, 'sentry', '0099_auto__del_field_teammember_is_active', '2019-07-20 13:04:57.303835+00');
+INSERT INTO public.south_migrationhistory VALUES (101, 'sentry', '0100_auto__add_field_tagkey_label', '2019-07-20 13:04:57.374553+00');
+INSERT INTO public.south_migrationhistory VALUES (102, 'sentry', '0101_ensure_teams', '2019-07-20 13:04:57.469812+00');
+INSERT INTO public.south_migrationhistory VALUES (103, 'sentry', '0102_ensure_slugs', '2019-07-20 13:04:57.56312+00');
+INSERT INTO public.south_migrationhistory VALUES (104, 'sentry', '0103_ensure_non_empty_slugs', '2019-07-20 13:04:57.651858+00');
+INSERT INTO public.south_migrationhistory VALUES (105, 'sentry', '0104_auto__add_groupseen__add_unique_groupseen_group_user', '2019-07-20 13:04:57.778758+00');
+INSERT INTO public.south_migrationhistory VALUES (106, 'sentry', '0105_auto__chg_field_projectcountbyminute_time_spent_total__chg_field_group', '2019-07-20 13:04:58.562638+00');
+INSERT INTO public.south_migrationhistory VALUES (107, 'sentry', '0106_auto__del_searchtoken__del_unique_searchtoken_document_field_token__de', '2019-07-20 13:04:58.640477+00');
+INSERT INTO public.south_migrationhistory VALUES (108, 'sentry', '0107_expand_user', '2019-07-20 13:04:58.745471+00');
+INSERT INTO public.south_migrationhistory VALUES (109, 'sentry', '0108_fix_user', '2019-07-20 13:04:58.814996+00');
+INSERT INTO public.south_migrationhistory VALUES (110, 'sentry', '0109_index_filtervalue_times_seen', '2019-07-20 13:04:58.877893+00');
+INSERT INTO public.south_migrationhistory VALUES (111, 'sentry', '0110_index_filtervalue_last_seen', '2019-07-20 13:04:58.950908+00');
+INSERT INTO public.south_migrationhistory VALUES (112, 'sentry', '0111_index_filtervalue_first_seen', '2019-07-20 13:04:59.021587+00');
+INSERT INTO public.south_migrationhistory VALUES (113, 'sentry', '0112_auto__chg_field_option_value__chg_field_useroption_value__chg_field_pr', '2019-07-20 13:04:59.114209+00');
+INSERT INTO public.south_migrationhistory VALUES (114, 'sentry', '0113_auto__add_field_team_status', '2019-07-20 13:04:59.246145+00');
+INSERT INTO public.south_migrationhistory VALUES (115, 'sentry', '0114_auto__add_field_projectkey_roles', '2019-07-20 13:04:59.395986+00');
+INSERT INTO public.south_migrationhistory VALUES (116, 'sentry', '0115_auto__del_projectcountbyminute__del_unique_projectcountbyminute_projec', '2019-07-20 13:04:59.480431+00');
+INSERT INTO public.south_migrationhistory VALUES (117, 'sentry', '0116_auto__del_field_event_server_name__del_field_event_culprit__del_field_', '2019-07-20 13:04:59.540827+00');
+INSERT INTO public.south_migrationhistory VALUES (118, 'sentry', '0117_auto__add_rule', '2019-07-20 13:04:59.645878+00');
+INSERT INTO public.south_migrationhistory VALUES (119, 'sentry', '0118_create_default_rules', '2019-07-20 13:04:59.722888+00');
+INSERT INTO public.south_migrationhistory VALUES (120, 'sentry', '0119_auto__add_field_projectkey_label', '2019-07-20 13:04:59.786788+00');
+INSERT INTO public.south_migrationhistory VALUES (121, 'sentry', '0120_auto__add_grouprulestatus', '2019-07-20 13:04:59.889073+00');
+INSERT INTO public.south_migrationhistory VALUES (122, 'sentry', '0121_auto__add_unique_grouprulestatus_rule_group', '2019-07-20 13:04:59.958207+00');
+INSERT INTO public.south_migrationhistory VALUES (123, 'sentry', '0122_add_event_group_id_datetime_index', '2019-07-20 13:05:00.031656+00');
+INSERT INTO public.south_migrationhistory VALUES (124, 'sentry', '0123_auto__add_groupassignee__add_index_event_group_datetime', '2019-07-20 13:05:00.139717+00');
+INSERT INTO public.south_migrationhistory VALUES (125, 'sentry', '0124_auto__add_grouphash__add_unique_grouphash_project_hash', '2019-07-20 13:05:00.263929+00');
+INSERT INTO public.south_migrationhistory VALUES (126, 'sentry', '0125_auto__add_field_user_is_managed', '2019-07-20 13:05:00.358991+00');
+INSERT INTO public.south_migrationhistory VALUES (127, 'sentry', '0126_auto__add_field_option_last_updated', '2019-07-20 13:05:00.446388+00');
+INSERT INTO public.south_migrationhistory VALUES (128, 'sentry', '0127_auto__add_release__add_unique_release_project_version', '2019-07-20 13:05:00.54524+00');
+INSERT INTO public.south_migrationhistory VALUES (129, 'sentry', '0128_auto__add_broadcast', '2019-07-20 13:05:00.636756+00');
+INSERT INTO public.south_migrationhistory VALUES (130, 'sentry', '0129_auto__chg_field_release_id__chg_field_pendingteammember_id__chg_field_', '2019-07-20 13:05:00.714664+00');
+INSERT INTO public.south_migrationhistory VALUES (131, 'sentry', '0130_auto__del_field_project_owner', '2019-07-20 13:05:00.783802+00');
+INSERT INTO public.south_migrationhistory VALUES (132, 'sentry', '0131_auto__add_organizationmember__add_unique_organizationmember_organizati', '2019-07-20 13:05:00.919802+00');
+INSERT INTO public.south_migrationhistory VALUES (133, 'sentry', '0132_add_default_orgs', '2019-07-20 13:05:01.015083+00');
+INSERT INTO public.south_migrationhistory VALUES (134, 'sentry', '0133_add_org_members', '2019-07-20 13:05:01.093272+00');
+INSERT INTO public.south_migrationhistory VALUES (135, 'sentry', '0134_auto__chg_field_team_organization', '2019-07-20 13:05:01.190011+00');
+INSERT INTO public.south_migrationhistory VALUES (136, 'sentry', '0135_auto__chg_field_project_team', '2019-07-20 13:05:01.292397+00');
+INSERT INTO public.south_migrationhistory VALUES (137, 'sentry', '0136_auto__add_field_organizationmember_email__chg_field_organizationmember', '2019-07-20 13:05:01.398273+00');
+INSERT INTO public.south_migrationhistory VALUES (138, 'sentry', '0137_auto__add_field_organizationmember_has_global_access', '2019-07-20 13:05:01.571787+00');
+INSERT INTO public.south_migrationhistory VALUES (139, 'sentry', '0138_migrate_team_members', '2019-07-20 13:05:01.664601+00');
+INSERT INTO public.south_migrationhistory VALUES (140, 'sentry', '0139_auto__add_auditlogentry', '2019-07-20 13:05:01.783247+00');
+INSERT INTO public.south_migrationhistory VALUES (141, 'sentry', '0140_auto__add_field_organization_slug', '2019-07-20 13:05:01.883384+00');
+INSERT INTO public.south_migrationhistory VALUES (142, 'sentry', '0141_fill_org_slugs', '2019-07-20 13:05:01.974538+00');
+INSERT INTO public.south_migrationhistory VALUES (143, 'sentry', '0142_auto__add_field_project_organization__add_unique_project_organization_', '2019-07-20 13:05:02.06925+00');
+INSERT INTO public.south_migrationhistory VALUES (144, 'sentry', '0143_fill_project_orgs', '2019-07-20 13:05:02.165681+00');
+INSERT INTO public.south_migrationhistory VALUES (145, 'sentry', '0144_auto__chg_field_project_organization', '2019-07-20 13:05:02.689786+00');
+INSERT INTO public.south_migrationhistory VALUES (146, 'sentry', '0145_auto__chg_field_organization_slug', '2019-07-20 13:05:02.7931+00');
+INSERT INTO public.south_migrationhistory VALUES (147, 'sentry', '0146_auto__add_field_auditlogentry_ip_address', '2019-07-20 13:05:02.871868+00');
+INSERT INTO public.south_migrationhistory VALUES (148, 'sentry', '0147_auto__del_unique_team_slug__add_unique_team_organization_slug', '2019-07-20 13:05:02.970604+00');
+INSERT INTO public.south_migrationhistory VALUES (149, 'sentry', '0148_auto__add_helppage', '2019-07-20 13:05:03.096584+00');
+INSERT INTO public.south_migrationhistory VALUES (150, 'sentry', '0149_auto__chg_field_groupseen_project__chg_field_groupseen_user__chg_field', '2019-07-20 13:05:03.183653+00');
+INSERT INTO public.south_migrationhistory VALUES (151, 'sentry', '0150_fix_broken_rules', '2019-07-20 13:05:03.288358+00');
+INSERT INTO public.south_migrationhistory VALUES (152, 'sentry', '0151_auto__add_file', '2019-07-20 13:05:03.445357+00');
+INSERT INTO public.south_migrationhistory VALUES (153, 'sentry', '0152_auto__add_field_file_checksum__chg_field_file_name__add_unique_file_na', '2019-07-20 13:05:03.617166+00');
+INSERT INTO public.south_migrationhistory VALUES (154, 'sentry', '0153_auto__add_field_grouprulestatus_last_active', '2019-07-20 13:05:03.721564+00');
+INSERT INTO public.south_migrationhistory VALUES (155, 'sentry', '0154_auto__add_field_tagkey_status', '2019-07-20 13:05:03.863935+00');
+INSERT INTO public.south_migrationhistory VALUES (156, 'sentry', '0155_auto__add_field_projectkey_status', '2019-07-20 13:05:04.036949+00');
+INSERT INTO public.south_migrationhistory VALUES (157, 'sentry', '0156_auto__add_apikey', '2019-07-20 13:05:04.181487+00');
+INSERT INTO public.south_migrationhistory VALUES (158, 'sentry', '0157_auto__add_authidentity__add_unique_authidentity_auth_provider_ident__a', '2019-07-20 13:05:04.359359+00');
+INSERT INTO public.south_migrationhistory VALUES (159, 'sentry', '0158_auto__add_unique_authidentity_auth_provider_user', '2019-07-20 13:05:04.483861+00');
+INSERT INTO public.south_migrationhistory VALUES (160, 'sentry', '0159_auto__add_field_authidentity_last_verified__add_field_organizationmemb', '2019-07-20 13:05:04.634109+00');
+INSERT INTO public.south_migrationhistory VALUES (161, 'sentry', '0160_auto__add_field_authprovider_default_global_access', '2019-07-20 13:05:04.795067+00');
+INSERT INTO public.south_migrationhistory VALUES (162, 'sentry', '0161_auto__chg_field_authprovider_config', '2019-07-20 13:05:04.929885+00');
+INSERT INTO public.south_migrationhistory VALUES (163, 'sentry', '0162_auto__chg_field_authidentity_data', '2019-07-20 13:05:05.075693+00');
+INSERT INTO public.south_migrationhistory VALUES (164, 'sentry', '0163_auto__add_field_authidentity_last_synced', '2019-07-20 13:05:05.184558+00');
+INSERT INTO public.south_migrationhistory VALUES (165, 'sentry', '0164_auto__add_releasefile__add_unique_releasefile_release_ident__add_field', '2019-07-20 13:05:05.427311+00');
+INSERT INTO public.south_migrationhistory VALUES (166, 'sentry', '0165_auto__del_unique_file_name_checksum', '2019-07-20 13:05:05.558095+00');
+INSERT INTO public.south_migrationhistory VALUES (167, 'sentry', '0166_auto__chg_field_user_id__add_field_apikey_allowed_origins', '2019-07-20 13:05:05.669074+00');
+INSERT INTO public.south_migrationhistory VALUES (168, 'sentry', '0167_auto__add_field_authprovider_flags', '2019-07-20 13:05:05.805069+00');
+INSERT INTO public.south_migrationhistory VALUES (169, 'sentry', '0168_unfill_projectkey_user', '2019-07-20 13:05:05.919536+00');
+INSERT INTO public.south_migrationhistory VALUES (170, 'sentry', '0169_auto__del_field_projectkey_user', '2019-07-20 13:05:06.031159+00');
+INSERT INTO public.south_migrationhistory VALUES (171, 'sentry', '0170_auto__add_organizationmemberteam__add_unique_organizationmemberteam_te', '2019-07-20 13:05:06.258567+00');
+INSERT INTO public.south_migrationhistory VALUES (172, 'sentry', '0171_auto__chg_field_team_owner', '2019-07-20 13:05:06.406986+00');
+INSERT INTO public.south_migrationhistory VALUES (173, 'sentry', '0172_auto__del_field_team_owner', '2019-07-20 13:05:06.524757+00');
+INSERT INTO public.south_migrationhistory VALUES (174, 'sentry', '0173_auto__del_teammember__del_unique_teammember_team_user', '2019-07-20 13:05:06.644285+00');
+INSERT INTO public.south_migrationhistory VALUES (175, 'sentry', '0174_auto__del_field_projectkey_user_added', '2019-07-20 13:05:06.782485+00');
+INSERT INTO public.south_migrationhistory VALUES (176, 'sentry', '0175_auto__del_pendingteammember__del_unique_pendingteammember_team_email', '2019-07-20 13:05:06.93021+00');
+INSERT INTO public.south_migrationhistory VALUES (177, 'sentry', '0176_auto__add_field_organizationmember_counter__add_unique_organizationmem', '2019-07-20 13:05:07.042943+00');
+INSERT INTO public.south_migrationhistory VALUES (178, 'sentry', '0177_fill_member_counters', '2019-07-20 13:05:07.159258+00');
+INSERT INTO public.south_migrationhistory VALUES (179, 'sentry', '0178_auto__del_unique_organizationmember_organization_counter', '2019-07-20 13:05:07.297029+00');
+INSERT INTO public.south_migrationhistory VALUES (180, 'sentry', '0179_auto__add_field_release_date_released', '2019-07-20 13:05:07.427394+00');
+INSERT INTO public.south_migrationhistory VALUES (181, 'sentry', '0180_auto__add_field_release_environment__add_field_release_ref__add_field_', '2019-07-20 13:05:07.618986+00');
+INSERT INTO public.south_migrationhistory VALUES (182, 'sentry', '0181_auto__del_field_release_environment__del_unique_release_project_versio', '2019-07-20 13:05:07.750396+00');
+INSERT INTO public.south_migrationhistory VALUES (183, 'sentry', '0182_auto__add_field_auditlogentry_actor_label__add_field_auditlogentry_act', '2019-07-20 13:05:07.903742+00');
+INSERT INTO public.south_migrationhistory VALUES (184, 'sentry', '0183_auto__del_index_grouphash_hash', '2019-07-20 13:05:08.026067+00');
+INSERT INTO public.south_migrationhistory VALUES (185, 'sentry', '0184_auto__del_field_group_checksum__del_unique_group_project_checksum__del', '2019-07-20 13:05:08.144637+00');
+INSERT INTO public.south_migrationhistory VALUES (186, 'sentry', '0185_auto__add_savedsearch__add_unique_savedsearch_project_name', '2019-07-20 13:05:08.296479+00');
+INSERT INTO public.south_migrationhistory VALUES (187, 'sentry', '0186_auto__add_field_group_first_release', '2019-07-20 13:05:08.429045+00');
+INSERT INTO public.south_migrationhistory VALUES (188, 'sentry', '0187_auto__add_index_group_project_first_release', '2019-07-20 13:05:08.554792+00');
+INSERT INTO public.south_migrationhistory VALUES (189, 'sentry', '0188_auto__add_userreport', '2019-07-20 13:05:09.270331+00');
+INSERT INTO public.south_migrationhistory VALUES (190, 'sentry', '0189_auto__add_index_userreport_project_event_id', '2019-07-20 13:05:09.393753+00');
+INSERT INTO public.south_migrationhistory VALUES (191, 'sentry', '0190_auto__add_field_release_new_groups', '2019-07-20 13:05:09.555305+00');
+INSERT INTO public.south_migrationhistory VALUES (192, 'sentry', '0191_auto__del_alert__del_alertrelatedgroup__del_unique_alertrelatedgroup_g', '2019-07-20 13:05:09.684288+00');
+INSERT INTO public.south_migrationhistory VALUES (193, 'sentry', '0192_add_model_groupemailthread', '2019-07-20 13:05:09.851109+00');
+INSERT INTO public.south_migrationhistory VALUES (194, 'sentry', '0193_auto__del_unique_groupemailthread_msgid__add_unique_groupemailthread_e', '2019-07-20 13:05:09.990225+00');
+INSERT INTO public.south_migrationhistory VALUES (195, 'sentry', '0194_auto__del_field_project_platform', '2019-07-20 13:05:10.111608+00');
+INSERT INTO public.south_migrationhistory VALUES (196, 'sentry', '0195_auto__chg_field_organization_owner', '2019-07-20 13:05:10.278826+00');
+INSERT INTO public.south_migrationhistory VALUES (197, 'sentry', '0196_auto__del_field_organization_owner', '2019-07-20 13:05:10.409754+00');
+INSERT INTO public.south_migrationhistory VALUES (198, 'sentry', '0197_auto__del_accessgroup__del_unique_accessgroup_team_name', '2019-07-20 13:05:10.549922+00');
+INSERT INTO public.south_migrationhistory VALUES (199, 'sentry', '0198_auto__add_field_release_primary_owner', '2019-07-20 13:05:10.67303+00');
+INSERT INTO public.south_migrationhistory VALUES (200, 'sentry', '0199_auto__add_field_project_first_event', '2019-07-20 13:05:10.789563+00');
+INSERT INTO public.south_migrationhistory VALUES (201, 'sentry', '0200_backfill_first_event', '2019-07-20 13:05:10.900071+00');
+INSERT INTO public.south_migrationhistory VALUES (202, 'sentry', '0201_auto__add_eventuser__add_unique_eventuser_project_ident__add_index_eve', '2019-07-20 13:05:11.090773+00');
+INSERT INTO public.south_migrationhistory VALUES (203, 'sentry', '0202_auto__add_field_eventuser_hash__add_unique_eventuser_project_hash', '2019-07-20 13:05:11.213318+00');
+INSERT INTO public.south_migrationhistory VALUES (204, 'sentry', '0203_auto__chg_field_eventuser_username__chg_field_eventuser_ident', '2019-07-20 13:05:11.388652+00');
+INSERT INTO public.south_migrationhistory VALUES (205, 'sentry', '0204_backfill_team_membership', '2019-07-20 13:05:11.515307+00');
+INSERT INTO public.south_migrationhistory VALUES (206, 'sentry', '0205_auto__add_field_organizationmember_role', '2019-07-20 13:05:11.674571+00');
+INSERT INTO public.south_migrationhistory VALUES (207, 'sentry', '0206_backfill_member_role', '2019-07-20 13:05:11.792375+00');
+INSERT INTO public.south_migrationhistory VALUES (208, 'sentry', '0207_auto__add_field_organization_default_role', '2019-07-20 13:05:11.947847+00');
+INSERT INTO public.south_migrationhistory VALUES (209, 'sentry', '0208_backfill_default_role', '2019-07-20 13:05:12.069787+00');
+INSERT INTO public.south_migrationhistory VALUES (210, 'sentry', '0209_auto__add_broadcastseen__add_unique_broadcastseen_broadcast_user', '2019-07-20 13:05:12.225145+00');
+INSERT INTO public.south_migrationhistory VALUES (211, 'sentry', '0210_auto__del_field_broadcast_badge', '2019-07-20 13:05:12.355049+00');
+INSERT INTO public.south_migrationhistory VALUES (212, 'sentry', '0211_auto__add_field_broadcast_title', '2019-07-20 13:05:12.510079+00');
+INSERT INTO public.south_migrationhistory VALUES (213, 'sentry', '0212_auto__add_fileblob__add_field_file_blob', '2019-07-20 13:05:12.723332+00');
+INSERT INTO public.south_migrationhistory VALUES (214, 'sentry', '0212_auto__add_organizationoption__add_unique_organizationoption_organizati', '2019-07-20 13:05:12.892616+00');
+INSERT INTO public.south_migrationhistory VALUES (215, 'sentry', '0213_migrate_file_blobs', '2019-07-20 13:05:13.043921+00');
+INSERT INTO public.south_migrationhistory VALUES (216, 'sentry', '0214_auto__add_field_broadcast_upstream_id', '2019-07-20 13:05:13.170702+00');
+INSERT INTO public.south_migrationhistory VALUES (217, 'sentry', '0215_auto__add_field_broadcast_date_expires', '2019-07-20 13:05:13.304071+00');
+INSERT INTO public.south_migrationhistory VALUES (218, 'sentry', '0216_auto__add_groupsnooze', '2019-07-20 13:05:13.467227+00');
+INSERT INTO public.south_migrationhistory VALUES (219, 'sentry', '0217_auto__add_groupresolution', '2019-07-20 13:05:13.645203+00');
+INSERT INTO public.south_migrationhistory VALUES (220, 'sentry', '0218_auto__add_field_groupresolution_status', '2019-07-20 13:05:13.824671+00');
+INSERT INTO public.south_migrationhistory VALUES (221, 'sentry', '0219_auto__add_field_groupbookmark_date_added', '2019-07-20 13:05:13.97255+00');
+INSERT INTO public.south_migrationhistory VALUES (222, 'sentry', '0220_auto__del_field_fileblob_storage_options__del_field_fileblob_storage__', '2019-07-20 13:05:14.115048+00');
+INSERT INTO public.south_migrationhistory VALUES (223, 'sentry', '0221_auto__chg_field_user_first_name', '2019-07-20 13:05:14.287015+00');
+INSERT INTO public.south_migrationhistory VALUES (224, 'sentry', '0222_auto__del_field_user_last_name__del_field_user_first_name__add_field_u', '2019-07-20 13:05:14.427565+00');
+INSERT INTO public.south_migrationhistory VALUES (225, 'sentry', '0223_delete_old_sentry_docs_options', '2019-07-20 13:05:14.563705+00');
+INSERT INTO public.south_migrationhistory VALUES (226, 'sentry', '0224_auto__add_index_userreport_project_date_added', '2019-07-20 13:05:14.708487+00');
+INSERT INTO public.south_migrationhistory VALUES (227, 'sentry', '0225_auto__add_fileblobindex__add_unique_fileblobindex_file_blob_offset', '2019-07-20 13:05:14.893173+00');
+INSERT INTO public.south_migrationhistory VALUES (228, 'sentry', '0226_backfill_file_size', '2019-07-20 13:05:15.046694+00');
+INSERT INTO public.south_migrationhistory VALUES (229, 'sentry', '0227_auto__del_field_activity_event', '2019-07-20 13:05:15.18293+00');
+INSERT INTO public.south_migrationhistory VALUES (230, 'sentry', '0228_auto__del_field_event_num_comments', '2019-07-20 13:05:15.331124+00');
+INSERT INTO public.south_migrationhistory VALUES (231, 'sentry', '0229_drop_event_constraints', '2019-07-20 13:05:15.537559+00');
+INSERT INTO public.south_migrationhistory VALUES (232, 'sentry', '0230_auto__del_field_eventmapping_group__del_field_eventmapping_project__ad', '2019-07-20 13:05:15.695141+00');
+INSERT INTO public.south_migrationhistory VALUES (233, 'sentry', '0231_auto__add_field_savedsearch_is_default', '2019-07-20 13:05:15.903804+00');
+INSERT INTO public.south_migrationhistory VALUES (234, 'sentry', '0232_default_savedsearch', '2019-07-20 13:05:16.075756+00');
+INSERT INTO public.south_migrationhistory VALUES (235, 'sentry', '0233_add_new_savedsearch', '2019-07-20 13:05:16.214665+00');
+INSERT INTO public.south_migrationhistory VALUES (236, 'sentry', '0234_auto__add_savedsearchuserdefault__add_unique_savedsearchuserdefault_pr', '2019-07-20 13:05:16.413775+00');
+INSERT INTO public.south_migrationhistory VALUES (237, 'sentry', '0235_auto__add_projectbookmark__add_unique_projectbookmark_project_id_user_', '2019-07-20 13:05:16.59609+00');
+INSERT INTO public.south_migrationhistory VALUES (238, 'sentry', '0236_auto__add_organizationonboardingtask__add_unique_organizationonboardin', '2019-07-20 13:05:16.809562+00');
+INSERT INTO public.south_migrationhistory VALUES (239, 'sentry', '0237_auto__add_eventtag__add_unique_eventtag_event_id_key_id_value_id', '2019-07-20 13:05:16.997848+00');
+INSERT INTO public.south_migrationhistory VALUES (240, 'sentry', '0238_fill_org_onboarding_tasks', '2019-07-20 13:05:17.875316+00');
+INSERT INTO public.south_migrationhistory VALUES (241, 'sentry', '0239_auto__add_projectdsymfile__add_unique_projectdsymfile_project_uuid__ad', '2019-07-20 13:05:18.131529+00');
+INSERT INTO public.south_migrationhistory VALUES (242, 'sentry', '0240_fill_onboarding_option', '2019-07-20 13:05:18.305008+00');
+INSERT INTO public.south_migrationhistory VALUES (243, 'sentry', '0241_auto__add_counter__add_unique_counter_project_ident__add_field_group_s', '2019-07-20 13:05:18.494911+00');
+INSERT INTO public.south_migrationhistory VALUES (244, 'sentry', '0242_auto__add_field_project_forced_color', '2019-07-20 13:05:18.661577+00');
+INSERT INTO public.south_migrationhistory VALUES (245, 'sentry', '0243_remove_inactive_members', '2019-07-20 13:05:18.849094+00');
+INSERT INTO public.south_migrationhistory VALUES (246, 'sentry', '0244_auto__add_groupredirect', '2019-07-20 13:05:19.06618+00');
+INSERT INTO public.south_migrationhistory VALUES (247, 'sentry', '0245_auto__del_field_project_callsign__del_unique_project_organization_call', '2019-07-20 13:05:19.285753+00');
+INSERT INTO public.south_migrationhistory VALUES (248, 'sentry', '0246_auto__add_dsymsymbol__add_unique_dsymsymbol_object_address__add_dsymsd', '2019-07-20 13:05:19.728448+00');
+INSERT INTO public.south_migrationhistory VALUES (249, 'sentry', '0247_migrate_file_blobs', '2019-07-20 13:05:19.929008+00');
+INSERT INTO public.south_migrationhistory VALUES (250, 'sentry', '0248_auto__add_projectplatform__add_unique_projectplatform_project_id_platf', '2019-07-20 13:05:20.127833+00');
+INSERT INTO public.south_migrationhistory VALUES (251, 'sentry', '0249_auto__add_index_eventtag_project_id_key_id_value_id', '2019-07-20 13:05:20.317423+00');
+INSERT INTO public.south_migrationhistory VALUES (252, 'sentry', '0250_auto__add_unique_userreport_project_event_id', '2019-07-20 13:05:20.534804+00');
+INSERT INTO public.south_migrationhistory VALUES (253, 'sentry', '0251_auto__add_useravatar', '2019-07-20 13:05:20.774332+00');
+INSERT INTO public.south_migrationhistory VALUES (254, 'sentry', '0252_default_users_to_gravatar', '2019-07-20 13:05:20.986862+00');
+INSERT INTO public.south_migrationhistory VALUES (255, 'sentry', '0253_auto__add_field_eventtag_group_id', '2019-07-20 13:05:21.181305+00');
+INSERT INTO public.south_migrationhistory VALUES (256, 'sentry', '0254_auto__add_index_eventtag_group_id_key_id_value_id', '2019-07-20 13:05:21.369588+00');
+INSERT INTO public.south_migrationhistory VALUES (257, 'sentry', '0255_auto__add_apitoken', '2019-07-20 13:05:21.664528+00');
+INSERT INTO public.south_migrationhistory VALUES (258, 'sentry', '0256_auto__add_authenticator', '2019-07-20 13:05:21.925615+00');
+INSERT INTO public.south_migrationhistory VALUES (259, 'sentry', '0257_repair_activity', '2019-07-20 13:05:22.141205+00');
+INSERT INTO public.south_migrationhistory VALUES (260, 'sentry', '0258_auto__add_field_user_is_password_expired__add_field_user_last_password', '2019-07-20 13:05:22.382813+00');
+INSERT INTO public.south_migrationhistory VALUES (261, 'sentry', '0259_auto__add_useremail__add_unique_useremail_user_email', '2019-07-20 13:05:22.651584+00');
+INSERT INTO public.south_migrationhistory VALUES (262, 'sentry', '0260_populate_email_addresses', '2019-07-20 13:05:22.923636+00');
+INSERT INTO public.south_migrationhistory VALUES (263, 'sentry', '0261_auto__add_groupsubscription__add_unique_groupsubscription_group_user', '2019-07-20 13:05:23.186573+00');
+INSERT INTO public.south_migrationhistory VALUES (264, 'sentry', '0262_fix_tag_indexes', '2019-07-20 13:05:23.433135+00');
+INSERT INTO public.south_migrationhistory VALUES (265, 'sentry', '0263_remove_default_regression_rule', '2019-07-20 13:05:23.652112+00');
+INSERT INTO public.south_migrationhistory VALUES (266, 'sentry', '0264_drop_grouptagvalue_project_index', '2019-07-20 13:05:23.898243+00');
+INSERT INTO public.south_migrationhistory VALUES (267, 'sentry', '0265_auto__add_field_rule_status', '2019-07-20 13:05:24.157163+00');
+INSERT INTO public.south_migrationhistory VALUES (268, 'sentry', '0266_auto__add_grouprelease__add_unique_grouprelease_group_id_release_id_en', '2019-07-20 13:05:24.431231+00');
+INSERT INTO public.south_migrationhistory VALUES (269, 'sentry', '0267_auto__add_environment__add_unique_environment_project_id_name__add_rel', '2019-07-20 13:05:24.723577+00');
+INSERT INTO public.south_migrationhistory VALUES (270, 'sentry', '0268_fill_environment', '2019-07-20 13:05:24.969479+00');
+INSERT INTO public.south_migrationhistory VALUES (271, 'sentry', '0269_auto__del_helppage', '2019-07-20 13:05:25.203227+00');
+INSERT INTO public.south_migrationhistory VALUES (272, 'sentry', '0270_auto__add_field_organizationmember_token', '2019-07-20 13:05:25.452745+00');
+INSERT INTO public.south_migrationhistory VALUES (273, 'sentry', '0271_auto__del_field_organizationmember_counter', '2019-07-20 13:05:25.699534+00');
+INSERT INTO public.south_migrationhistory VALUES (274, 'sentry', '0272_auto__add_unique_authenticator_user_type', '2019-07-20 13:05:25.947648+00');
+INSERT INTO public.south_migrationhistory VALUES (275, 'sentry', '0273_auto__add_repository__add_unique_repository_organization_id_name__add_', '2019-07-20 13:05:26.352043+00');
+INSERT INTO public.south_migrationhistory VALUES (276, 'sentry', '0274_auto__add_index_commit_repository_id_date_added', '2019-07-20 13:05:26.609744+00');
+INSERT INTO public.south_migrationhistory VALUES (277, 'sentry', '0275_auto__del_index_grouptagvalue_project_key_value__add_index_grouptagval', '2019-07-20 13:05:26.925523+00');
+INSERT INTO public.south_migrationhistory VALUES (278, 'sentry', '0276_auto__add_field_user_session_nonce', '2019-07-20 13:05:27.231746+00');
+INSERT INTO public.south_migrationhistory VALUES (279, 'sentry', '0277_auto__add_commitfilechange__add_unique_commitfilechange_commit_filenam', '2019-07-20 13:05:27.648596+00');
+INSERT INTO public.south_migrationhistory VALUES (280, 'sentry', '0278_auto__add_releaseproject__add_unique_releaseproject_project_release__a', '2019-07-20 13:05:27.970412+00');
+INSERT INTO public.south_migrationhistory VALUES (281, 'sentry', '0279_populate_release_orgs_and_projects', '2019-07-20 13:05:28.243504+00');
+INSERT INTO public.south_migrationhistory VALUES (282, 'sentry', '0280_auto__add_field_releasecommit_organization_id', '2019-07-20 13:05:28.526388+00');
+INSERT INTO public.south_migrationhistory VALUES (283, 'sentry', '0281_populate_release_commit_organization_id', '2019-07-20 13:05:28.787544+00');
+INSERT INTO public.south_migrationhistory VALUES (284, 'sentry', '0282_auto__add_field_releasefile_organization__add_field_releaseenvironment', '2019-07-20 13:05:29.092146+00');
+INSERT INTO public.south_migrationhistory VALUES (285, 'sentry', '0283_populate_release_environment_and_release_file_organization', '2019-07-20 13:05:29.361784+00');
+INSERT INTO public.south_migrationhistory VALUES (286, 'sentry', '0284_auto__del_field_release_project__add_field_release_project_id__chg_fie', '2019-07-20 13:05:30.711364+00');
+INSERT INTO public.south_migrationhistory VALUES (287, 'sentry', '0285_auto__chg_field_release_project_id__chg_field_releasefile_project_id', '2019-07-20 13:05:30.980416+00');
+INSERT INTO public.south_migrationhistory VALUES (288, 'sentry', '0286_drop_project_fk_release_release_file', '2019-07-20 13:05:31.254807+00');
+INSERT INTO public.south_migrationhistory VALUES (289, 'sentry', '0287_auto__add_field_releaseproject_new_groups', '2019-07-20 13:05:31.526166+00');
+INSERT INTO public.south_migrationhistory VALUES (290, 'sentry', '0288_set_release_project_new_groups_to_zero', '2019-07-20 13:05:31.784735+00');
+INSERT INTO public.south_migrationhistory VALUES (291, 'sentry', '0289_auto__add_organizationavatar', '2019-07-20 13:05:32.127214+00');
+INSERT INTO public.south_migrationhistory VALUES (292, 'sentry', '0290_populate_release_project_new_groups', '2019-07-20 13:05:32.397703+00');
+INSERT INTO public.south_migrationhistory VALUES (293, 'sentry', '0291_merge_legacy_releases', '2019-07-20 13:05:32.680627+00');
+INSERT INTO public.south_migrationhistory VALUES (294, 'sentry', '0292_auto__add_unique_release_organization_version', '2019-07-20 13:05:32.960938+00');
+INSERT INTO public.south_migrationhistory VALUES (295, 'sentry', '0293_auto__del_unique_release_project_id_version', '2019-07-20 13:05:33.262453+00');
+INSERT INTO public.south_migrationhistory VALUES (296, 'sentry', '0294_auto__add_groupcommitresolution__add_unique_groupcommitresolution_grou', '2019-07-20 13:05:33.581745+00');
+INSERT INTO public.south_migrationhistory VALUES (297, 'sentry', '0295_auto__add_environmentproject__add_unique_environmentproject_project_en', '2019-07-20 13:05:33.902853+00');
+INSERT INTO public.south_migrationhistory VALUES (298, 'sentry', '0296_populate_environment_organization_and_projects', '2019-07-20 13:05:34.252089+00');
+INSERT INTO public.south_migrationhistory VALUES (299, 'sentry', '0297_auto__add_field_project_flags', '2019-07-20 13:05:34.637728+00');
+INSERT INTO public.south_migrationhistory VALUES (300, 'sentry', '0298_backfill_project_has_releases', '2019-07-20 13:05:34.964298+00');
+INSERT INTO public.south_migrationhistory VALUES (301, 'sentry', '0299_auto__chg_field_environment_organization_id', '2019-07-20 13:05:35.28975+00');
+INSERT INTO public.south_migrationhistory VALUES (302, 'sentry', '0300_auto__add_processingissue__add_unique_processingissue_project_checksum', '2019-07-20 13:05:35.831913+00');
+INSERT INTO public.south_migrationhistory VALUES (303, 'sentry', '0301_auto__chg_field_environment_project_id__chg_field_releaseenvironment_p', '2019-07-20 13:05:36.203572+00');
+INSERT INTO public.south_migrationhistory VALUES (304, 'sentry', '0302_merge_environments', '2019-07-20 13:05:36.601688+00');
+INSERT INTO public.south_migrationhistory VALUES (305, 'sentry', '0303_fix_release_new_group_counts', '2019-07-20 13:05:36.903383+00');
+INSERT INTO public.south_migrationhistory VALUES (306, 'sentry', '0304_auto__add_deploy', '2019-07-20 13:05:37.2921+00');
+INSERT INTO public.south_migrationhistory VALUES (307, 'sentry', '0305_auto__chg_field_authidentity_data__chg_field_useroption_value__chg_fie', '2019-07-20 13:05:37.641134+00');
+INSERT INTO public.south_migrationhistory VALUES (308, 'sentry', '0306_auto__add_apigrant__add_apiauthorization__add_unique_apiauthorization_', '2019-07-20 13:05:38.235291+00');
+INSERT INTO public.south_migrationhistory VALUES (309, 'sentry', '0307_auto__add_field_apigrant_scope_list__add_field_apitoken_scope_list__ad', '2019-07-20 13:05:38.616846+00');
+INSERT INTO public.south_migrationhistory VALUES (310, 'sentry', '0308_auto__add_versiondsymfile__add_unique_versiondsymfile_dsym_file_versio', '2019-07-20 13:05:39.060225+00');
+INSERT INTO public.south_migrationhistory VALUES (311, 'sentry', '0308_backfill_scopes_list', '2019-07-20 13:05:39.418245+00');
+INSERT INTO public.south_migrationhistory VALUES (312, 'sentry', '0309_fix_application_state', '2019-07-20 13:05:39.774124+00');
+INSERT INTO public.south_migrationhistory VALUES (313, 'sentry', '0310_auto__add_field_savedsearch_owner', '2019-07-20 13:05:40.201021+00');
+INSERT INTO public.south_migrationhistory VALUES (314, 'sentry', '0311_auto__add_releaseheadcommit__add_unique_releaseheadcommit_repository_i', '2019-07-20 13:05:40.715796+00');
+INSERT INTO public.south_migrationhistory VALUES (315, 'sentry', '0312_create_missing_emails', '2019-07-20 13:05:41.170713+00');
+INSERT INTO public.south_migrationhistory VALUES (316, 'sentry', '0313_auto__add_field_commitauthor_external_id__add_unique_commitauthor_orga', '2019-07-20 13:05:41.546228+00');
+INSERT INTO public.south_migrationhistory VALUES (317, 'sentry', '0314_auto__add_distribution__add_unique_distribution_release_name__add_fiel', '2019-07-20 13:05:41.962277+00');
+INSERT INTO public.south_migrationhistory VALUES (318, 'sentry', '0315_auto__add_field_useroption_organization__add_unique_useroption_user_or', '2019-07-20 13:05:42.38639+00');
+INSERT INTO public.south_migrationhistory VALUES (319, 'sentry', '0316_auto__del_field_grouptagvalue_project__del_field_grouptagvalue_group__', '2019-07-20 13:05:42.78495+00');
+INSERT INTO public.south_migrationhistory VALUES (320, 'sentry', '0317_drop_grouptagvalue_constraints', '2019-07-20 13:05:43.193537+00');
+INSERT INTO public.south_migrationhistory VALUES (321, 'sentry', '0318_auto__add_field_deploy_notified', '2019-07-20 13:05:43.592511+00');
+INSERT INTO public.south_migrationhistory VALUES (322, 'sentry', '0319_auto__add_index_deploy_notified', '2019-07-20 13:05:44.032498+00');
+INSERT INTO public.south_migrationhistory VALUES (323, 'sentry', '0320_auto__add_index_eventtag_date_added', '2019-07-20 13:05:44.442512+00');
+INSERT INTO public.south_migrationhistory VALUES (324, 'sentry', '0321_auto__add_field_projectkey_rate_limit_count__add_field_projectkey_rate', '2019-07-20 13:05:44.881741+00');
+INSERT INTO public.south_migrationhistory VALUES (325, 'sentry', '0321_auto__add_unique_environment_organization_id_name', '2019-07-20 13:05:45.370048+00');
+INSERT INTO public.south_migrationhistory VALUES (326, 'sentry', '0322_merge_0321_migrations', '2019-07-20 13:05:45.813486+00');
+INSERT INTO public.south_migrationhistory VALUES (327, 'sentry', '0323_auto__add_unique_releaseenvironment_organization_id_release_id_environ', '2019-07-20 13:05:46.271629+00');
+INSERT INTO public.south_migrationhistory VALUES (328, 'sentry', '0324_auto__add_field_eventuser_name__add_field_userreport_event_user_id', '2019-07-20 13:05:46.710298+00');
+INSERT INTO public.south_migrationhistory VALUES (329, 'sentry', '0325_auto__add_scheduleddeletion__add_unique_scheduleddeletion_app_label_mo', '2019-07-20 13:05:47.262958+00');
+INSERT INTO public.south_migrationhistory VALUES (330, 'sentry', '0326_auto__add_field_groupsnooze_count__add_field_groupsnooze_window__add_f', '2019-07-20 13:05:47.800028+00');
+INSERT INTO public.south_migrationhistory VALUES (331, 'sentry', '0327_auto__add_field_release_commit_count__add_field_release_last_commit_id', '2019-07-20 13:05:49.551838+00');
+INSERT INTO public.south_migrationhistory VALUES (332, 'sentry', '0328_backfill_release_stats', '2019-07-20 13:05:50.006208+00');
+INSERT INTO public.south_migrationhistory VALUES (333, 'sentry', '0329_auto__del_dsymsymbol__del_unique_dsymsymbol_object_address__del_global', '2019-07-20 13:05:50.453055+00');
+INSERT INTO public.south_migrationhistory VALUES (334, 'sentry', '0330_auto__add_field_grouphash_state', '2019-07-20 13:05:50.872003+00');
+INSERT INTO public.south_migrationhistory VALUES (335, 'sentry', '0331_auto__del_index_releasecommit_project_id__del_index_releaseenvironment', '2019-07-20 13:05:51.300563+00');
+INSERT INTO public.south_migrationhistory VALUES (336, 'sentry', '0332_auto__add_featureadoption__add_unique_featureadoption_organization_fea', '2019-07-20 13:05:51.749685+00');
+INSERT INTO public.south_migrationhistory VALUES (337, 'sentry', '0333_auto__add_field_groupresolution_type__add_field_groupresolution_actor_', '2019-07-20 13:05:52.196707+00');
+INSERT INTO public.south_migrationhistory VALUES (338, 'sentry', '0334_auto__add_field_project_platform', '2019-07-20 13:05:52.616813+00');
+INSERT INTO public.south_migrationhistory VALUES (339, 'sentry', '0334_auto__add_scheduledjob', '2019-07-20 13:05:53.034089+00');
+INSERT INTO public.south_migrationhistory VALUES (340, 'sentry', '0335_auto__add_field_groupsnooze_actor_id', '2019-07-20 13:05:53.463852+00');
+INSERT INTO public.south_migrationhistory VALUES (341, 'sentry', '0336_auto__add_field_user_last_active', '2019-07-20 13:05:53.88697+00');
+INSERT INTO public.south_migrationhistory VALUES (342, 'sentry', '0337_fix_out_of_order_migrations', '2019-07-20 13:05:54.313169+00');
+INSERT INTO public.south_migrationhistory VALUES (343, 'sentry', '0338_fix_null_user_last_active', '2019-07-20 13:05:54.74538+00');
+INSERT INTO public.south_migrationhistory VALUES (344, 'sentry', '0339_backfill_first_project_feature', '2019-07-20 13:05:55.159497+00');
+INSERT INTO public.south_migrationhistory VALUES (345, 'sentry', '0340_auto__add_grouptombstone__add_field_grouphash_group_tombstone_id', '2019-07-20 13:05:55.651544+00');
+INSERT INTO public.south_migrationhistory VALUES (346, 'sentry', '0341_auto__add_organizationintegration__add_unique_organizationintegration_', '2019-07-20 13:05:56.359494+00');
+INSERT INTO public.south_migrationhistory VALUES (347, 'sentry', '0342_projectplatform', '2019-07-20 13:05:56.837321+00');
+INSERT INTO public.south_migrationhistory VALUES (348, 'sentry', '0343_auto__add_index_groupcommitresolution_commit_id', '2019-07-20 13:05:57.338974+00');
+INSERT INTO public.south_migrationhistory VALUES (349, 'sentry', '0344_add_index_ProjectPlatform_last_seen', '2019-07-20 13:05:57.854897+00');
+INSERT INTO public.south_migrationhistory VALUES (350, 'sentry', '0345_add_citext', '2019-07-20 13:05:58.672692+00');
+INSERT INTO public.south_migrationhistory VALUES (351, 'sentry', '0346_auto__del_field_tagkey_project__add_field_tagkey_project_id__del_uniqu', '2019-07-20 13:05:59.140674+00');
+INSERT INTO public.south_migrationhistory VALUES (352, 'sentry', '0347_auto__add_index_grouptagvalue_project_id__add_index_grouptagvalue_grou', '2019-07-20 13:05:59.616209+00');
+INSERT INTO public.south_migrationhistory VALUES (353, 'sentry', '0348_fix_project_key_rate_limit_window_unit', '2019-07-20 13:06:00.094285+00');
+INSERT INTO public.south_migrationhistory VALUES (354, 'sentry', '0349_drop_constraints_filterkey_filtervalue_grouptagkey', '2019-07-20 13:06:00.59141+00');
+INSERT INTO public.south_migrationhistory VALUES (355, 'sentry', '0350_auto__add_email', '2019-07-20 13:06:01.087443+00');
+INSERT INTO public.south_migrationhistory VALUES (356, 'sentry', '0351_backfillemail', '2019-07-20 13:06:01.573643+00');
+INSERT INTO public.south_migrationhistory VALUES (357, 'sentry', '0352_add_index_release_coalesce_date_released_date_added', '2019-07-20 13:06:02.029894+00');
+INSERT INTO public.south_migrationhistory VALUES (358, 'sentry', '0353_auto__del_field_eventuser_project__add_field_eventuser_project_id__del', '2019-07-20 13:06:02.512714+00');
+INSERT INTO public.south_migrationhistory VALUES (359, 'sentry', '0354_auto__chg_field_commitfilechange_filename', '2019-07-20 13:06:03.00257+00');
+INSERT INTO public.south_migrationhistory VALUES (360, 'sentry', '0355_auto__add_field_organizationintegration_config__add_field_organization', '2019-07-20 13:06:03.624223+00');
+INSERT INTO public.south_migrationhistory VALUES (361, 'sentry', '0356_auto__add_useridentity__add_unique_useridentity_user_identity__add_ide', '2019-07-20 13:06:04.224629+00');
+INSERT INTO public.south_migrationhistory VALUES (362, 'sentry', '0357_auto__add_projectteam__add_unique_projectteam_project_team', '2019-07-20 13:06:04.765833+00');
+INSERT INTO public.south_migrationhistory VALUES (363, 'sentry', '0358_auto__add_projectsymcachefile__add_unique_projectsymcachefile_project_', '2019-07-20 13:06:05.332953+00');
+INSERT INTO public.south_migrationhistory VALUES (364, 'sentry', '0359_auto__add_index_tagvalue_project_id_key_last_seen', '2019-07-20 13:06:05.91493+00');
+INSERT INTO public.south_migrationhistory VALUES (365, 'sentry', '0360_auto__add_groupshare', '2019-07-20 13:06:06.619375+00');
+INSERT INTO public.south_migrationhistory VALUES (366, 'sentry', '0361_auto__add_minidumpfile', '2019-07-20 13:06:07.239178+00');
+INSERT INTO public.south_migrationhistory VALUES (367, 'sentry', '0362_auto__add_userip__add_unique_userip_user_ip_address', '2019-07-20 13:06:07.909674+00');
+INSERT INTO public.south_migrationhistory VALUES (368, 'sentry', '0363_auto__add_grouplink__add_unique_grouplink_group_id_linked_type_linked_', '2019-07-20 13:06:08.593365+00');
+INSERT INTO public.south_migrationhistory VALUES (369, 'sentry', '0364_backfill_grouplink_from_groupcommitresolution', '2019-07-20 13:06:09.144346+00');
+INSERT INTO public.south_migrationhistory VALUES (370, 'sentry', '0365_auto__del_index_eventtag_project_id_key_id_value_id', '2019-07-20 13:06:09.700691+00');
+INSERT INTO public.south_migrationhistory VALUES (371, 'sentry', '0366_backfill_first_project_heroku', '2019-07-20 13:06:10.299052+00');
+INSERT INTO public.south_migrationhistory VALUES (372, 'sentry', '0367_auto__chg_field_release_ref__chg_field_release_version', '2019-07-20 13:06:10.997912+00');
+INSERT INTO public.south_migrationhistory VALUES (373, 'sentry', '0368_auto__add_deletedorganization__add_deletedteam__add_deletedproject', '2019-07-20 13:06:11.631668+00');
+INSERT INTO public.south_migrationhistory VALUES (374, 'sentry', '0369_remove_old_grouphash_last_processed_event_data', '2019-07-20 13:06:12.217505+00');
+INSERT INTO public.south_migrationhistory VALUES (375, 'sentry', '0370_correct_groupsnooze_windows', '2019-07-20 13:06:12.804816+00');
+INSERT INTO public.south_migrationhistory VALUES (376, 'sentry', '0371_auto__add_servicehook', '2019-07-20 13:06:13.488181+00');
+INSERT INTO public.south_migrationhistory VALUES (377, 'sentry', '0371_auto__del_minidumpfile', '2019-07-20 13:06:14.162519+00');
+INSERT INTO public.south_migrationhistory VALUES (378, 'sentry', '0372_resolve_migration_conflict', '2019-07-20 13:06:14.755431+00');
+INSERT INTO public.south_migrationhistory VALUES (379, 'sentry', '0373_backfill_projectteam', '2019-07-20 13:06:16.843193+00');
+INSERT INTO public.south_migrationhistory VALUES (380, 'sentry', '0374_auto__del_useridentity__del_unique_useridentity_user_identity__del_ide', '2019-07-20 13:06:17.464104+00');
+INSERT INTO public.south_migrationhistory VALUES (381, 'sentry', '0375_auto__add_identityprovider__add_unique_identityprovider_type_organizat', '2019-07-20 13:06:18.139627+00');
+INSERT INTO public.south_migrationhistory VALUES (382, 'sentry', '0376_auto__add_userpermission__add_unique_userpermission_user_permission', '2019-07-20 13:06:18.750152+00');
+INSERT INTO public.south_migrationhistory VALUES (383, 'sentry', '0377_auto__add_pullrequest__add_unique_pullrequest_repository_id_key__add_i', '2019-07-20 13:06:19.431927+00');
+INSERT INTO public.south_migrationhistory VALUES (384, 'sentry', '0378_delete_outdated_projectteam', '2019-07-20 13:06:20.04861+00');
+INSERT INTO public.south_migrationhistory VALUES (385, 'sentry', '0379_auto__add_unique_projectteam_project', '2019-07-20 13:06:20.64995+00');
+INSERT INTO public.south_migrationhistory VALUES (386, 'sentry', '0380_auto__chg_field_servicehook_url', '2019-07-20 13:06:21.358191+00');
+INSERT INTO public.south_migrationhistory VALUES (387, 'sentry', '0381_auto__del_field_deletedproject_team_name__del_field_deletedproject_tea', '2019-07-20 13:06:21.995675+00');
+INSERT INTO public.south_migrationhistory VALUES (388, 'sentry', '0382_auto__add_groupenvironment__add_unique_groupenvironment_group_id_envir', '2019-07-20 13:06:22.66156+00');
+INSERT INTO public.south_migrationhistory VALUES (389, 'sentry', '0383_auto__chg_field_project_team', '2019-07-20 13:06:23.361528+00');
+INSERT INTO public.south_migrationhistory VALUES (390, 'sentry', '0384_auto__del_unique_projectteam_project', '2019-07-20 13:06:24.014727+00');
+INSERT INTO public.south_migrationhistory VALUES (391, 'sentry', '0385_auto__add_field_rule_environment_id', '2019-07-20 13:06:24.653809+00');
+INSERT INTO public.south_migrationhistory VALUES (392, 'sentry', '0386_auto__del_unique_project_team_slug', '2019-07-20 13:06:25.287179+00');
+INSERT INTO public.south_migrationhistory VALUES (393, 'sentry', '0387_auto__add_field_groupassignee_team__chg_field_groupassignee_user', '2019-07-20 13:06:25.937851+00');
+INSERT INTO public.south_migrationhistory VALUES (394, 'sentry', '0388_auto__add_field_environmentproject_is_hidden', '2019-07-20 13:06:26.576944+00');
+INSERT INTO public.south_migrationhistory VALUES (395, 'sentry', '0389_auto__add_field_groupenvironment_first_release_id__add_index_groupenvi', '2019-07-20 13:06:27.219114+00');
+INSERT INTO public.south_migrationhistory VALUES (396, 'sentry', '0390_auto__add_field_userreport_environment', '2019-07-20 13:06:27.882719+00');
+INSERT INTO public.south_migrationhistory VALUES (397, 'sentry', '0391_auto__add_fileblobowner__add_unique_fileblobowner_blob_organization__a', '2019-07-20 13:06:28.5821+00');
+INSERT INTO public.south_migrationhistory VALUES (398, 'sentry', '0392_auto__add_projectownership', '2019-07-20 13:06:29.283296+00');
+INSERT INTO public.south_migrationhistory VALUES (399, 'sentry', '0393_auto__add_assistantactivity__add_unique_assistantactivity_user_guide_i', '2019-07-20 13:06:29.98144+00');
+INSERT INTO public.south_migrationhistory VALUES (400, 'sentry', '0394_auto__chg_field_project_team', '2019-07-20 13:06:30.743103+00');
+INSERT INTO public.south_migrationhistory VALUES (401, 'sentry', '0395_auto__add_releaseprojectenvironment__add_unique_releaseprojectenvironm', '2019-07-20 13:06:31.580919+00');
+INSERT INTO public.south_migrationhistory VALUES (402, 'sentry', '0396_auto__del_field_project_team', '2019-07-20 13:06:32.394083+00');
+INSERT INTO public.south_migrationhistory VALUES (403, 'sentry', '0397_auto__add_latestrelease__add_unique_latestrelease_repository_id_enviro', '2019-07-20 13:06:33.101792+00');
+INSERT INTO public.south_migrationhistory VALUES (404, 'sentry', '0397_auto__add_unique_identity_idp_user', '2019-07-20 13:06:33.92667+00');
+INSERT INTO public.south_migrationhistory VALUES (405, 'sentry', '0398_auto__add_pullrequestcommit__add_unique_pullrequestcommit_pull_request', '2019-07-20 13:06:34.721781+00');
+INSERT INTO public.south_migrationhistory VALUES (406, 'sentry', '0399_auto__chg_field_user_last_login__add_unique_identity_idp_user', '2019-07-20 13:06:35.462987+00');
+INSERT INTO public.south_migrationhistory VALUES (407, 'sentry', '0400_auto__add_projectredirect__add_unique_projectredirect_organization_red', '2019-07-20 13:06:36.300854+00');
+INSERT INTO public.south_migrationhistory VALUES (408, 'sentry', '0401_auto__chg_field_projectdsymfile_uuid', '2019-07-20 13:06:37.058313+00');
+INSERT INTO public.south_migrationhistory VALUES (409, 'sentry', '0402_auto__add_field_organizationintegration_date_added__add_field_identity', '2019-07-20 13:06:37.779493+00');
+INSERT INTO public.south_migrationhistory VALUES (410, 'sentry', '0403_auto__add_teamavatar', '2019-07-20 13:06:38.55147+00');
+INSERT INTO public.south_migrationhistory VALUES (411, 'sentry', '0404_auto__del_unique_environment_project_id_name', '2019-07-20 13:06:39.312567+00');
+INSERT INTO public.south_migrationhistory VALUES (412, 'sentry', '0405_auto__add_field_user_flags', '2019-07-20 13:06:40.094629+00');
+INSERT INTO public.south_migrationhistory VALUES (413, 'sentry', '0406_auto__add_projectavatar', '2019-07-20 13:06:41.072328+00');
+INSERT INTO public.south_migrationhistory VALUES (414, 'sentry', '0407_auto__add_field_identityprovider_external_id__add_unique_identityprovi', '2019-07-20 13:06:41.801054+00');
+INSERT INTO public.south_migrationhistory VALUES (415, 'sentry', '0408_identity_provider_external_id', '2019-07-20 13:06:42.603643+00');
+INSERT INTO public.south_migrationhistory VALUES (416, 'sentry', '0409_auto__add_field_releaseprojectenvironment_last_deploy_id', '2019-07-20 13:06:43.452606+00');
+INSERT INTO public.south_migrationhistory VALUES (417, 'sentry', '0410_auto__del_unique_identityprovider_type_organization', '2019-07-20 13:06:44.343659+00');
+INSERT INTO public.south_migrationhistory VALUES (418, 'sentry', '0411_auto__add_field_projectkey_data', '2019-07-20 13:06:45.20007+00');
+INSERT INTO public.south_migrationhistory VALUES (419, 'sentry', '0412_auto__chg_field_file_name', '2019-07-20 13:06:45.974074+00');
+INSERT INTO public.south_migrationhistory VALUES (420, 'sentry', '0413_auto__add_externalissue__add_unique_externalissue_organization_id_inte', '2019-07-20 13:06:46.838728+00');
+INSERT INTO public.south_migrationhistory VALUES (421, 'sentry', '0414_backfill_release_project_environment_last_deploy_id', '2019-07-20 13:06:47.630082+00');
+INSERT INTO public.south_migrationhistory VALUES (422, 'sentry', '0415_auto__add_relay', '2019-07-20 13:06:48.441416+00');
+INSERT INTO public.south_migrationhistory VALUES (423, 'sentry', '0416_auto__del_field_identityprovider_organization__add_field_identityprovi', '2019-07-20 13:06:49.429111+00');
+INSERT INTO public.south_migrationhistory VALUES (424, 'sentry', '0417_migrate_identities', '2019-07-20 13:06:50.257458+00');
+INSERT INTO public.south_migrationhistory VALUES (425, 'sentry', '0418_delete_old_idps', '2019-07-20 13:06:51.169383+00');
+INSERT INTO public.south_migrationhistory VALUES (426, 'sentry', '0419_auto__add_unique_identityprovider_type_external_id', '2019-07-20 13:06:51.968934+00');
+INSERT INTO public.south_migrationhistory VALUES (427, 'sentry', '0420_auto__chg_field_identityprovider_organization_id', '2019-07-20 13:06:52.791646+00');
+INSERT INTO public.south_migrationhistory VALUES (428, 'sentry', '0421_auto__del_field_identityprovider_organization_id__del_unique_identityp', '2019-07-20 13:06:53.617592+00');
+INSERT INTO public.south_migrationhistory VALUES (429, 'sentry', '0422_auto__add_grouphashtombstone__add_unique_grouphashtombstone_project_ha', '2019-07-20 13:06:54.458868+00');
+INSERT INTO public.south_migrationhistory VALUES (430, 'sentry', '0423_auto__add_index_grouphashtombstone_deleted_at', '2019-07-20 13:06:57.356511+00');
+INSERT INTO public.south_migrationhistory VALUES (431, 'sentry', '0424_auto__add_field_integration_status', '2019-07-20 13:06:58.29896+00');
+INSERT INTO public.south_migrationhistory VALUES (432, 'sentry', '0425_auto__add_index_pullrequest_organization_id_merge_commit_sha', '2019-07-20 13:06:59.125703+00');
+INSERT INTO public.south_migrationhistory VALUES (433, 'sentry', '0425_remove_invalid_github_idps', '2019-07-20 13:06:59.98907+00');
+INSERT INTO public.south_migrationhistory VALUES (434, 'sentry', '0426_auto__add_sentryappinstallation__add_sentryapp__add_field_user_is_sent', '2019-07-20 13:07:01.407093+00');
+INSERT INTO public.south_migrationhistory VALUES (435, 'sentry', '0427_auto__add_eventattachment__add_unique_eventattachment_project_id_event', '2019-07-20 13:07:02.325574+00');
+INSERT INTO public.south_migrationhistory VALUES (436, 'sentry', '0428_auto__add_index_eventattachment_project_id_date_added', '2019-07-20 13:07:03.187227+00');
+INSERT INTO public.south_migrationhistory VALUES (437, 'sentry', '0429_auto__add_integrationexternalproject__add_unique_integrationexternalpr', '2019-07-20 13:07:04.10308+00');
+INSERT INTO public.south_migrationhistory VALUES (438, 'sentry', '0430_auto__add_field_organizationintegration_status', '2019-07-20 13:07:05.046348+00');
+INSERT INTO public.south_migrationhistory VALUES (439, 'sentry', '0431_auto__add_field_externalissue_metadata', '2019-07-20 13:07:05.907214+00');
+INSERT INTO public.south_migrationhistory VALUES (440, 'sentry', '0432_auto__add_field_relay_is_internal', '2019-07-20 13:07:06.818472+00');
+INSERT INTO public.south_migrationhistory VALUES (441, 'sentry', '0432_auto__add_index_userreport_date_added__add_index_eventattachment_date_', '2019-07-20 13:07:07.740075+00');
+INSERT INTO public.south_migrationhistory VALUES (442, 'sentry', '0433_auto__add_field_relay_is_internal__add_field_userip_country_code__add_', '2019-07-20 13:07:08.732778+00');
+INSERT INTO public.south_migrationhistory VALUES (443, 'sentry', '0434_auto__add_discoversavedqueryproject__add_unique_discoversavedqueryproj', '2019-07-20 13:07:09.705885+00');
+INSERT INTO public.south_migrationhistory VALUES (444, 'sentry', '0435_auto__add_field_discoversavedquery_created_by', '2019-07-20 13:07:10.649513+00');
+INSERT INTO public.south_migrationhistory VALUES (445, 'sentry', '0436_rename_projectdsymfile_to_projectdebugfile', '2019-07-20 13:07:11.644178+00');
+INSERT INTO public.south_migrationhistory VALUES (446, 'sentry', '0437_auto__add_field_sentryapp_status', '2019-07-20 13:07:12.799176+00');
+INSERT INTO public.south_migrationhistory VALUES (447, 'sentry', '0438_auto__add_index_sentryapp_status__chg_field_sentryapp_proxy_user__chg_', '2019-07-20 13:07:13.778009+00');
+INSERT INTO public.south_migrationhistory VALUES (448, 'sentry', '0439_auto__chg_field_sentryapp_owner', '2019-07-20 13:07:14.800324+00');
+INSERT INTO public.south_migrationhistory VALUES (449, 'sentry', '0440_auto__del_unique_projectdebugfile_project_debug_id__add_index_projectd', '2019-07-20 13:07:15.731805+00');
+INSERT INTO public.south_migrationhistory VALUES (450, 'sentry', '0441_auto__add_field_projectdebugfile_data', '2019-07-20 13:07:16.800143+00');
+INSERT INTO public.south_migrationhistory VALUES (451, 'sentry', '0442_auto__add_projectcficachefile__add_unique_projectcficachefile_project_', '2019-07-20 13:07:17.948879+00');
+INSERT INTO public.south_migrationhistory VALUES (452, 'sentry', '0443_auto__add_field_organizationmember_token_expires_at', '2019-07-20 13:07:19.020112+00');
+INSERT INTO public.south_migrationhistory VALUES (453, 'sentry', '0443_auto__del_dsymapp__del_unique_dsymapp_project_platform_app_id__del_ver', '2019-07-20 13:07:19.971313+00');
+INSERT INTO public.south_migrationhistory VALUES (454, 'sentry', '0444_auto__add_sentryappavatar__add_field_sentryapp_redirect_url__add_field', '2019-07-20 13:07:21.296566+00');
+INSERT INTO public.south_migrationhistory VALUES (455, 'sentry', '0445_auto__add_promptsactivity__add_unique_promptsactivity_user_feature_org', '2019-07-20 13:07:22.45014+00');
+INSERT INTO public.south_migrationhistory VALUES (456, 'sentry', '0446_auto__add_index_promptsactivity_project_id', '2019-07-20 13:07:23.472023+00');
+INSERT INTO public.south_migrationhistory VALUES (457, 'sentry', '0447_auto__del_field_promptsactivity_organization__add_field_promptsactivit', '2019-07-20 13:07:24.746014+00');
+INSERT INTO public.south_migrationhistory VALUES (458, 'sentry', '0448_auto__add_field_sentryapp_is_alertable', '2019-07-20 13:07:25.891086+00');
+INSERT INTO public.south_migrationhistory VALUES (459, 'sentry', '0449_auto__chg_field_release_owner', '2019-07-20 13:07:26.971553+00');
+INSERT INTO public.south_migrationhistory VALUES (460, 'sentry', '0450_auto__del_grouphashtombstone__del_unique_grouphashtombstone_project_ha', '2019-07-20 13:07:27.923301+00');
+INSERT INTO public.south_migrationhistory VALUES (461, 'sentry', '0451_auto__del_field_projectbookmark_project_id__add_field_projectbookmark_', '2019-07-20 13:07:28.864877+00');
+INSERT INTO public.south_migrationhistory VALUES (462, 'sentry', '0452_auto__add_field_sentryapp_events', '2019-07-20 13:07:29.809495+00');
+INSERT INTO public.south_migrationhistory VALUES (463, 'sentry', '0452_auto__del_field_releaseenvironment_organization_id__del_field_releasee', '2019-07-20 13:07:30.893918+00');
+INSERT INTO public.south_migrationhistory VALUES (464, 'sentry', '0453_auto__add_index_releasefile_release_name', '2019-07-20 13:07:32.159907+00');
+INSERT INTO public.south_migrationhistory VALUES (465, 'sentry', '0454_resolve_duplicate_0452', '2019-07-20 13:07:33.398658+00');
+INSERT INTO public.south_migrationhistory VALUES (466, 'sentry', '0455_auto__add_field_groupenvironment_first_seen', '2019-07-20 13:07:34.694021+00');
+INSERT INTO public.south_migrationhistory VALUES (467, 'sentry', '0456_auto__add_dashboard__add_unique_dashboard_organization_title__add_widg', '2019-07-20 13:07:36.286698+00');
+INSERT INTO public.south_migrationhistory VALUES (468, 'sentry', '0457_auto__add_field_savedsearch_is_global__chg_field_savedsearch_project__', '2019-07-20 13:07:37.378752+00');
+INSERT INTO public.south_migrationhistory VALUES (469, 'sentry', '0457_auto__add_monitorcheckin__add_monitor__add_index_monitor_type_next_che', '2019-07-20 13:07:38.774921+00');
+INSERT INTO public.south_migrationhistory VALUES (470, 'sentry', '0458_global_searches_data_migration', '2019-07-20 13:07:39.823545+00');
+INSERT INTO public.south_migrationhistory VALUES (471, 'sentry', '0459_global_searches_unique_constraint', '2019-07-20 13:07:40.846071+00');
+INSERT INTO public.south_migrationhistory VALUES (472, 'sentry', '0460_auto__add_field_servicehook_organization_id', '2019-07-20 13:07:41.892209+00');
+INSERT INTO public.south_migrationhistory VALUES (473, 'sentry', '0461_event_attachment_indexes', '2019-07-20 13:07:43.193987+00');
+INSERT INTO public.south_migrationhistory VALUES (474, 'sentry', '0462_auto__add_servicehookproject', '2019-07-20 13:07:44.446993+00');
+INSERT INTO public.south_migrationhistory VALUES (475, 'sentry', '0462_releaseenvironment_project_id', '2019-07-20 13:07:45.540703+00');
+INSERT INTO public.south_migrationhistory VALUES (476, 'sentry', '0463_backfill_service_hook_project', '2019-07-20 13:07:46.728411+00');
+INSERT INTO public.south_migrationhistory VALUES (477, 'sentry', '0464_auto__add_sentryappcomponent__add_field_sentryapp_schema', '2019-07-20 13:07:48.932685+00');
+INSERT INTO public.south_migrationhistory VALUES (478, 'sentry', '0464_groupenvironment_foreignkeys', '2019-07-20 13:07:50.583735+00');
+INSERT INTO public.south_migrationhistory VALUES (479, 'sentry', '0465_sync', '2019-07-20 13:07:51.958003+00');
+INSERT INTO public.south_migrationhistory VALUES (480, 'sentry', '0466_auto__add_platformexternalissue__add_unique_platformexternalissue_grou', '2019-07-20 13:07:53.346718+00');
+INSERT INTO public.south_migrationhistory VALUES (481, 'sentry', '0467_backfill_integration_status', '2019-07-20 13:07:54.62994+00');
+INSERT INTO public.south_migrationhistory VALUES (482, 'sentry', '0468_auto__add_field_projectdebugfile_code_id__add_index_projectdebugfile_p', '2019-07-20 13:07:55.954059+00');
+INSERT INTO public.south_migrationhistory VALUES (483, 'sentry', '0468_recent_search', '2019-07-20 13:07:57.803897+00');
+INSERT INTO public.south_migrationhistory VALUES (484, 'sentry', '0469_fix_state', '2019-07-20 13:07:59.106469+00');
+INSERT INTO public.south_migrationhistory VALUES (485, 'sentry', '0470_org_saved_search', '2019-07-20 13:08:03.015249+00');
+INSERT INTO public.south_migrationhistory VALUES (486, 'sentry', '0471_global_saved_search_types', '2019-07-20 13:08:04.76421+00');
+INSERT INTO public.south_migrationhistory VALUES (487, 'sentry', '0472_auto__add_field_sentryapp_author', '2019-07-20 13:08:06.293841+00');
+INSERT INTO public.south_migrationhistory VALUES (488, 'sentry.nodestore', '0001_initial', '2019-07-20 13:08:08.178516+00');
+INSERT INTO public.south_migrationhistory VALUES (489, 'sentry.search', '0001_initial', '2019-07-20 13:08:10.026894+00');
+INSERT INTO public.south_migrationhistory VALUES (490, 'sentry.search', '0002_auto__del_searchtoken__del_unique_searchtoken_document_field_token__de', '2019-07-20 13:08:10.062073+00');
+INSERT INTO public.south_migrationhistory VALUES (491, 'social_auth', '0001_initial', '2019-07-20 13:08:14.882454+00');
+INSERT INTO public.south_migrationhistory VALUES (492, 'social_auth', '0002_auto__add_unique_nonce_timestamp_salt_server_url__add_unique_associati', '2019-07-20 13:08:15.339752+00');
+INSERT INTO public.south_migrationhistory VALUES (493, 'social_auth', '0003_auto__del_nonce__del_unique_nonce_server_url_timestamp_salt__del_assoc', '2019-07-20 13:08:15.396209+00');
+INSERT INTO public.south_migrationhistory VALUES (494, 'social_auth', '0004_auto__del_unique_usersocialauth_provider_uid__add_unique_usersocialaut', '2019-07-20 13:08:15.431692+00');
+INSERT INTO public.south_migrationhistory VALUES (495, 'sentry.tagstore', '0001_initial', '2019-07-20 13:08:16.23831+00');
+INSERT INTO public.south_migrationhistory VALUES (496, 'sentry.tagstore', '0002_auto__del_tagkey__del_unique_tagkey_project_id_environment_id_key__del', '2019-07-20 13:08:16.330638+00');
+INSERT INTO public.south_migrationhistory VALUES (497, 'sentry.tagstore', '0003_auto__add_tagkey__add_unique_tagkey_project_id_environment_id_key__add', '2019-07-20 13:08:16.769929+00');
+INSERT INTO public.south_migrationhistory VALUES (498, 'sentry.tagstore', '0004_auto__del_tagkey__del_unique_tagkey_project_id_environment_id_key__del', '2019-07-20 13:08:16.854338+00');
+INSERT INTO public.south_migrationhistory VALUES (499, 'sentry.tagstore', '0005_auto__add_tagvalue__add_unique_tagvalue_project_id__key_value__add_ind', '2019-07-20 13:08:17.266336+00');
+INSERT INTO public.south_migrationhistory VALUES (500, 'sentry.tagstore', '0006_auto__del_unique_eventtag_event_id_key_value__add_unique_eventtag_proj', '2019-07-20 13:08:17.346456+00');
+INSERT INTO public.south_migrationhistory VALUES (501, 'sentry.tagstore', '0007_auto__chg_field_tagkey_environment_id__chg_field_tagkey_project_id__ch', '2019-07-20 13:08:18.205632+00');
+INSERT INTO public.south_migrationhistory VALUES (502, 'sentry.tagstore', '0008_auto__chg_field_tagkey_environment_id', '2019-07-20 13:08:18.2867+00');
+INSERT INTO public.south_migrationhistory VALUES (503, 'sentry_plugins.hipchat_ac', '0001_initial', '2019-07-20 13:08:18.968783+00');
+INSERT INTO public.south_migrationhistory VALUES (504, 'sentry_plugins.hipchat_ac', '0002_auto__del_mentionedevent', '2019-07-20 13:08:19.063742+00');
+INSERT INTO public.south_migrationhistory VALUES (505, 'sentry_plugins.jira_ac', '0001_initial', '2019-07-20 13:08:23.68469+00');
 
 
 --
@@ -8288,7 +8459,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 424, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 430, true);
 
 
 --
@@ -8309,7 +8480,7 @@ SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 141, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 143, true);
 
 
 --
@@ -8317,6 +8488,13 @@ SELECT pg_catalog.setval('public.django_content_type_id_seq', 141, true);
 --
 
 SELECT pg_catalog.setval('public.django_site_id_seq', 1, true);
+
+
+--
+-- Name: jira_ac_tenant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.jira_ac_tenant_id_seq', 1, false);
 
 
 --
@@ -8737,6 +8915,20 @@ SELECT pg_catalog.setval('public.sentry_grouptagkey_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.sentry_grouptombstone_id_seq', 1, false);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.sentry_hipchat_ac_tenant_organizations_id_seq', 1, false);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.sentry_hipchat_ac_tenant_projects_id_seq', 1, false);
 
 
 --
@@ -9254,7 +9446,7 @@ SELECT pg_catalog.setval('public.social_auth_usersocialauth_id_seq', 1, false);
 -- Name: south_migrationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.south_migrationhistory_id_seq', 502, true);
+SELECT pg_catalog.setval('public.south_migrationhistory_id_seq', 505, true);
 
 
 --
@@ -9410,6 +9602,22 @@ ALTER TABLE ONLY public.django_session
 
 ALTER TABLE ONLY public.django_site
     ADD CONSTRAINT django_site_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jira_ac_tenant jira_ac_tenant_client_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jira_ac_tenant
+    ADD CONSTRAINT jira_ac_tenant_client_key_key UNIQUE (client_key);
+
+
+--
+-- Name: jira_ac_tenant jira_ac_tenant_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jira_ac_tenant
+    ADD CONSTRAINT jira_ac_tenant_pkey PRIMARY KEY (id);
 
 
 --
@@ -10322,6 +10530,46 @@ ALTER TABLE ONLY public.sentry_grouptombstone
 
 ALTER TABLE ONLY public.sentry_grouptombstone
     ADD CONSTRAINT sentry_grouptombstone_previous_group_id_key UNIQUE (previous_group_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations sentry_hipchat_ac_tenant_organi_tenant_id_277f40009a2aa417_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_organizations
+    ADD CONSTRAINT sentry_hipchat_ac_tenant_organi_tenant_id_277f40009a2aa417_uniq UNIQUE (tenant_id, organization_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations sentry_hipchat_ac_tenant_organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_organizations
+    ADD CONSTRAINT sentry_hipchat_ac_tenant_organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant sentry_hipchat_ac_tenant_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant
+    ADD CONSTRAINT sentry_hipchat_ac_tenant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects sentry_hipchat_ac_tenant_projec_tenant_id_5308544b484f49a9_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_projects
+    ADD CONSTRAINT sentry_hipchat_ac_tenant_projec_tenant_id_5308544b484f49a9_uniq UNIQUE (tenant_id, project_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects sentry_hipchat_ac_tenant_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_projects
+    ADD CONSTRAINT sentry_hipchat_ac_tenant_projects_pkey PRIMARY KEY (id);
 
 
 --
@@ -11771,6 +12019,20 @@ CREATE INDEX django_session_session_key_like ON public.django_session USING btre
 
 
 --
+-- Name: jira_ac_tenant_client_key_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jira_ac_tenant_client_key_like ON public.jira_ac_tenant USING btree (client_key varchar_pattern_ops);
+
+
+--
+-- Name: jira_ac_tenant_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jira_ac_tenant_organization_id ON public.jira_ac_tenant USING btree (organization_id);
+
+
+--
 -- Name: nodestore_node_id_like; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -12818,6 +13080,62 @@ CREATE INDEX sentry_grouptagkey_project_id ON public.sentry_grouptagkey USING bt
 --
 
 CREATE INDEX sentry_grouptombstone_project_id ON public.sentry_grouptombstone USING btree (project_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_auth_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_auth_user_id ON public.sentry_hipchat_ac_tenant USING btree (auth_user_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_id_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_id_like ON public.sentry_hipchat_ac_tenant USING btree (id varchar_pattern_ops);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_organizations_organization_id ON public.sentry_hipchat_ac_tenant_organizations USING btree (organization_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_tenant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_organizations_tenant_id ON public.sentry_hipchat_ac_tenant_organizations USING btree (tenant_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations_tenant_id_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_organizations_tenant_id_like ON public.sentry_hipchat_ac_tenant_organizations USING btree (tenant_id varchar_pattern_ops);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_project_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_projects_project_id ON public.sentry_hipchat_ac_tenant_projects USING btree (project_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_tenant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_projects_tenant_id ON public.sentry_hipchat_ac_tenant_projects USING btree (tenant_id);
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects_tenant_id_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX sentry_hipchat_ac_tenant_projects_tenant_id_like ON public.sentry_hipchat_ac_tenant_projects USING btree (tenant_id varchar_pattern_ops);
 
 
 --
@@ -14098,6 +14416,14 @@ ALTER TABLE ONLY public.sentry_authidentity
 
 
 --
+-- Name: sentry_hipchat_ac_tenant auth_user_id_refs_id_615fc607; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant
+    ADD CONSTRAINT auth_user_id_refs_id_615fc607 FOREIGN KEY (auth_user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: sentry_commit author_id_refs_id_2f962e87; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -14602,6 +14928,14 @@ ALTER TABLE ONLY public.sentry_organizationmember
 
 
 --
+-- Name: jira_ac_tenant organization_id_refs_id_49689eb3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jira_ac_tenant
+    ADD CONSTRAINT organization_id_refs_id_49689eb3 FOREIGN KEY (organization_id) REFERENCES public.sentry_organization(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: sentry_useroption organization_id_refs_id_56961afd; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -14695,6 +15029,14 @@ ALTER TABLE ONLY public.sentry_organizationavatar
 
 ALTER TABLE ONLY public.sentry_dashboard
     ADD CONSTRAINT organization_id_refs_id_ae0d09f9 FOREIGN KEY (organization_id) REFERENCES public.sentry_organization(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations organization_id_refs_id_af26d69f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_organizations
+    ADD CONSTRAINT organization_id_refs_id_af26d69f FOREIGN KEY (organization_id) REFERENCES public.sentry_organization(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -14967,6 +15309,14 @@ ALTER TABLE ONLY public.sentry_projectoptions
 
 ALTER TABLE ONLY public.sentry_groupsubscription
     ADD CONSTRAINT project_id_refs_id_a564d25b FOREIGN KEY (project_id) REFERENCES public.sentry_project(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects project_id_refs_id_a7eeaf92; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_projects
+    ADD CONSTRAINT project_id_refs_id_a7eeaf92 FOREIGN KEY (project_id) REFERENCES public.sentry_project(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -15255,6 +15605,22 @@ ALTER TABLE ONLY public.sentry_organizationmember_teams
 
 ALTER TABLE ONLY public.sentry_organizationaccessrequest
     ADD CONSTRAINT team_id_refs_id_ea6e538b FOREIGN KEY (team_id) REFERENCES public.sentry_team(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_projects tenant_id_refs_id_6c1ae0ea; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_projects
+    ADD CONSTRAINT tenant_id_refs_id_6c1ae0ea FOREIGN KEY (tenant_id) REFERENCES public.sentry_hipchat_ac_tenant(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: sentry_hipchat_ac_tenant_organizations tenant_id_refs_id_f26e0c12; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sentry_hipchat_ac_tenant_organizations
+    ADD CONSTRAINT tenant_id_refs_id_f26e0c12 FOREIGN KEY (tenant_id) REFERENCES public.sentry_hipchat_ac_tenant(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
