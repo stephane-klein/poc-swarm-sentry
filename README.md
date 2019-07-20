@@ -6,6 +6,13 @@ Note:
 
 - 2 Vagrant servers are created but Sentry is only installed on the first server. The second server created only to test Swarm placement constraints feature
 
+Roadmap:
+
+- [x] Initialize Docker Swarm in Vagrant
+- [x] Deploy Sentry
+- [x] Destroy Sentry
+- [ ] Upgrade Sentry
+- [ ] Deploy Traefik 
 
 ## Prerequisites
 
