@@ -1,0 +1,76 @@
+version: '3.7'
+x-sentry-environment:
+  &sentry-environment
+  SENTRY_REDIS_HOST: redis
+  SENTRY_POSTGRES_HOST: postgres
+  SENTRY_DB_USER: sentry
+  SENTRY_DB_PASSWORD: sentry
+  # Generate this secret with "docker run --rm sentry:9.0.0 sentry config generate-secret-key"
+  SENTRY_SECRET_KEY: "ZDFvdmcjZnZob2lzbC01cWQpd2ZnM2owcjErLW44Kz1AbmNpaz10YzFkQF5AOHpmazMK"
+  SENTRY_REDIS_HOST: redis
+  SENTRY_POSTGRES_HOST: postgres
+  SENTRY_DB_USER: sentry
+  SENTRY_DB_PASSWORD: sentry
+  SENTRY_SERVER_EMAIL: noreply@example.com
+
+services:
+  sentry:
+    image: sentry:9.1.1
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+    ports:
+      - target: 9000
+        published: 9000
+        protocol: tcp
+        mode: host
+    configs:
+      - source: sentry_config
+        target: /etc/sentry/config.yml
+    environment: *sentry-environment
+    # command:  bash -c "pip uninstall sentry-plugins -y; sentry upgrade --noinput; sentry run web"
+
+  worker:
+    image: sentry:9.1.1
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+    environment: *sentry-environment
+    command: run worker
+
+  cron:
+    image: sentry:9.1.1
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+    environment: *sentry-environment
+    command: run cron
+
+  redis:
+    image: redis:4.0-alpine
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+
+  postgres:
+    image: postgres:10.4-alpine
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+    environment:
+      - POSTGRES_PASSWORD=sentry
+      - POSTGRES_USER=sentry
+    volumes:
+      - sentry_postgres:/var/lib/postgresql/data
+
+configs:
+  sentry_config:
+    file: ./sentry-config.yml
+
+volumes:
+  sentry_postgres:

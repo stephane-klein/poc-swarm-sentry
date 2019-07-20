@@ -1,0 +1,4 @@
+system.url-prefix: http://sentry.example.com
+system.admin-email: contact@stephane-klein.info
+auth.allow-registration: false
+beacon.anonymous: true
