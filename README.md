@@ -2,9 +2,10 @@
 
 Start Vagrant Ubuntu VM and install Docker on this servers `infra01.example.com` and `infra02.example.com`:
 
-Note:
+Notes:
 
 - 2 Vagrant servers are created but Sentry is only installed on the first server. The second server created only to test Swarm placement constraints feature
+- `configs` in docker-compose don't work without Docker Swarm
 
 Roadmap:
 
