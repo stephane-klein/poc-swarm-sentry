@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  traefik:
+    image: traefik:1.7.12-alpine
+    command: --configFile=/etc/traefik/traefik.toml --docker
+    networks:
+     - traefik
+    configs:
+      - source: traefik_config
+        target: /etc/traefik/traefik.toml
+    deploy:
+      placement:
+        constraints:
+        - node.hostname == infra01
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - target: 8080
+        published: 8080
+        mode: tcp
+        mode: host
+      - target: 80
+        published: 80
+        mode: tcp
+        mode: host
+
+configs:
+  traefik_config:
+    file: ./traefik.toml
+
+networks:
+  traefik:
+    name: traefik

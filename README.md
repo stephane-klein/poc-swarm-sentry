@@ -12,7 +12,7 @@ Roadmap:
 - [x] Deploy Sentry
 - [x] Destroy Sentry
 - [ ] Upgrade Sentry
-- [ ] Deploy Traefik 
+- [x] Deploy Traefik 
 
 ## Prerequisites
 
@@ -43,6 +43,12 @@ $ ./initialize-swarm.sh
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
 sr9cxlye7h4pgm2a0r2aujrc1 *   infra01             Ready               Active              Leader              18.09.8
 4ae6vhc5gcukzk3g8hkon1znd     infra02             Ready               Active                                  18.09.8
+```
+
+Deploy Traefik:
+
+```
+$ ./traefik/deploy.sh
 ```
 
 First deployment:
@@ -101,6 +107,13 @@ ID                            HOSTNAME            STATUS              AVAILABILI
 tldrnrw81ydp9p17klsppfrxy *   infra01             Ready               Active              Leader              18.09.8
 485qf00sd1bvdxo634hef3pgt     infra02             Ready               Active                                  18.09.8
 ```
+
+# Deploy Traefik
+
+```
+$ ./traefik/deploy.sh
+```
+
 
 ### Deploy Sentry
 

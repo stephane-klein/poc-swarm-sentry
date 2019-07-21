@@ -21,11 +21,20 @@ services:
       placement:
         constraints:
         - node.hostname == infra01
-    ports:
-      - target: 9000
-        published: 9000
-        protocol: tcp
-        mode: host
+    networks:
+     - traefik
+     - sentry
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: traefik
+      traefik.frontend.rule: Host:sentry.example.com
+      traefik.protocol: http
+      traefik.port: 9000
+    # ports:
+    #   - target: 9000
+    #     published: 9000
+    #     protocol: tcp
+    #     mode: host
     configs:
       - source: sentry_config
         target: /etc/sentry/config.yml
@@ -38,6 +47,8 @@ services:
       placement:
         constraints:
         - node.hostname == infra01
+    networks:
+     - sentry
     environment: *sentry-environment
     command: run worker
 
@@ -47,6 +58,8 @@ services:
       placement:
         constraints:
         - node.hostname == infra01
+    networks:
+     - sentry
     environment: *sentry-environment
     command: run cron
 
@@ -56,6 +69,8 @@ services:
       placement:
         constraints:
         - node.hostname == infra01
+    networks:
+     - sentry
 
   postgres:
     image: postgres:10.4-alpine
@@ -63,6 +78,8 @@ services:
       placement:
         constraints:
         - node.hostname == infra01
+    networks:
+     - sentry
     environment:
       - POSTGRES_PASSWORD=sentry
       - POSTGRES_USER=sentry
@@ -75,3 +92,10 @@ configs:
 
 volumes:
   sentry_postgres:
+
+networks:
+  sentry:
+    name: sentry
+  traefik:
+    name: traefik
+    external: true

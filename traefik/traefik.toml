@@ -1,0 +1,11 @@
+logLevel = "ERROR"
+
+[docker]
+watch = true
+domain = "traefik"
+exposedByDefault = false
+swarmMode = true
+network = "traefik"
+
+[api]
+dashboard = true
