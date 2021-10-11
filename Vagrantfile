@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
       "sentry.example.com"
     ]
     server.vm.provider :virtualbox do |vb|
-      vb.memory = '8096'
+      vb.memory = '8192'
       vb.cpus = '2'
     end
 
@@ -61,7 +61,7 @@ Vagrant.configure("2") do |config|
       "infra02.example.com",
     ]
     server.vm.provider :virtualbox do |vb|
-      vb.memory = '2096'
+      vb.memory = '2048'
       vb.cpus = '1'
     end
 
