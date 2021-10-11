@@ -33,29 +33,31 @@ $ vagrant plugin install vagrant-hostmanager --plugin-version 1.8.9
 
 Create VM: 
 
-```
-$ vagrant up
+```bash
+vagrant up
 ```
 
-Initialize Docker Swarm:
+### Initialize Docker Swarm:
 
+```bash
+./initialize-swarm.sh
 ```
-$ ./initialize-swarm.sh
+```
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
 sr9cxlye7h4pgm2a0r2aujrc1 *   infra01             Ready               Active              Leader              18.09.8
 4ae6vhc5gcukzk3g8hkon1znd     infra02             Ready               Active                                  18.09.8
 ```
 
-Deploy Traefik:
+### Deploy Traefik:
+
+```bash
+./traefik/deploy.sh
+```
+
+### First deployment:
 
 ```
-$ ./traefik/deploy.sh
-```
-
-First deployment:
-
-```
-$ ./sentry/first-deployment.sh
+./sentry/first-deployment.sh
 ```
 
 Go to http://infra01.example.com:9000/auth/login/sentry/ (`admin@example.com` / `password`)
@@ -66,98 +68,121 @@ Go to http://infra01.example.com:9000/auth/login/sentry/ (`admin@example.com` / 
 ### Create VM and Initialize Docker Swarm
 
 ```
-$ vagrant up
+vagrant up
 ```
 
-Add Vagrant private ssh key to your ssh agent:
+### Add Vagrant private ssh key to your ssh agent:
 
-```
-$ ssh-add -k .vagrant/machines/infra01/virtualbox/private_key
-$ ssh-add -k .vagrant/machines/infra02/virtualbox/private_key
+```bash
+ssh-add -k .vagrant/machines/infra01/virtualbox/private_key
+ssh-add -k .vagrant/machines/infra02/virtualbox/private_key
+ssh-keygen -R infra02
+ssh-keygen -R infra02.example.com
+ssh-keygen -R infra01
+ssh-keygen -R infra01.example.com
+ssh-keyscan infra01 infra01.example.com infra02 infra02.example.com >> ~/.ssh/known_hosts
 ```
 
-Check remote docker-engine access via ssh:
+### Check remote docker-engine access via ssh:
 
+```bash
+docker -H ssh://vagrant@infra01.example.com info
 ```
-$ docker -H ssh://vagrant@infra01.example.com info
+```
 Containers: 0
  Running: 0
  Paused: 0
 ...
 ```
 
+```bash
+docker -H ssh://vagrant@infra02.example.com info
 ```
-$ docker -H ssh://vagrant@infra02.example.com info
+```
 Containers: 0
  Running: 0
  Paused: 0
 ...
 ```
-
-Initialize Swarm on `infra01`:
-
-```
-$ docker -H ssh://vagrant@infra01.example.com swarm init --advertise-addr 172.28.128.19 >> /dev/null
-$ docker -H ssh://vagrant@infra01.example.com swarm join-token -q worker > swarm-token-worker
-$ docker -H ssh://vagrant@infra02.example.com swarm join --token $(cat swarm-token-worker) 172.28.128.19:2377
-```
+### Get the IP addresses from both VM's
+```bash
+export INFRA01_IP=$(ping -c 1 infra01.example.com | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')
+export INFRA02_IP=$(ping -c 1 infra02.example.com | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p')
 
 ```
-$ docker -H ssh://vagrant@infra01.example.com node ls
-ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
-tldrnrw81ydp9p17klsppfrxy *   infra01             Ready               Active              Leader              18.09.8
-485qf00sd1bvdxo634hef3pgt     infra02             Ready               Active                                  18.09.8
+### Initialize Swarm on `infra01` and join `infra02` to the cluster:
+
+```bash
+docker -H ssh://vagrant@infra01.example.com swarm init --advertise-addr $INFRA01_IP >> /dev/null
+docker -H ssh://vagrant@infra01.example.com swarm join-token -q worker > swarm-token-worker
+docker -H ssh://vagrant@infra02.example.com swarm join --token $(cat swarm-token-worker) $INFRA01_IP:2377
 ```
 
-# Deploy Traefik
+```bash
+docker -H ssh://vagrant@infra01.example.com node ls
+```
+```
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+ep00nuf9qlzn2ip63w73vupbx *   infra01    Ready     Active         Leader           20.10.9
+1oy2sfv0f393zzj1ohz08kcao     infra02    Ready     Active                          20.10.9
 
 ```
-$ ./traefik/deploy.sh
-```
 
+### Deploy Traefik
+
+```bash
+./traefik/deploy.sh
+```
 
 ### Deploy Sentry
 
 First load `DOCKER_HOST` variable env to avoid to use `docker -H...`:
 
-```
-$ export DOCKER_HOST=ssh://vagrant@infra01.example.com
-```
-
-```
-$ docker stack deploy -c sentry/sentry.yml sentry
+```bash
+export DOCKER_HOST=ssh://vagrant@infra01.example.com
 ```
 
-Stop Sentry service because it is fresh installation and database isn't initialized:
+### Then deploy the sentry stack
 
-```
-$ docker service scale sentry_sentry=0 sentry_cron=0 sentry_worker=0
-```
-
-```
-$ docker stack ls
-NAME                SERVICES            ORCHESTRATOR
-sentry              5                   Swarm
+```bash
+docker stack deploy -c sentry/sentry.yml sentry
 ```
 
-```
-$ docker stack ps sentry
-ID                  NAME                IMAGE                  NODE                DESIRED STATE       CURRENT STATE              ERROR                              PORTS
-btqd9ovhhsw3        sentry_postgres.1   postgres:10.4-alpine   infra01             Running             Running 7 minutes ago
-qkuudko6f8hw        sentry_redis.1      redis:4.0-alpine       infra01             Running             Running 7 minutes ago
-tqwysleklrsj        sentry_worker.1     sentry:9.1.1                               Shutdown            Pending 14 minutes ago   "no suitable node (scheduling …"
-a7vxguruhm42        sentry_postgres.1   postgres:10.4-alpine                       Shutdown            Pending 14 minutes ago   "no suitable node (scheduling …"
-skhi2nhmxjwz        sentry_redis.1      redis:4.0-alpine                           Shutdown            Pending 14 minutes ago   "no suitable node (scheduling …"
+### Stop Sentry service because it is fresh installation and database isn't initialized:
+
+```bash
+docker service scale sentry_sentry=0 sentry_cron=0 sentry_worker=0
 ```
 
+```bash
+docker stack ls
 ```
-$ docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE                  PORTS
-yk8kpl3cjelb        sentry_cron         replicated          0/0                 sentry:9.1.1
-tgn7mbxplzlq        sentry_postgres     replicated          0/1                 postgres:10.4-alpine
-b71se6y51hr9        sentry_redis        replicated          0/1                 redis:4.0-alpine
-yrv0j8kx95fs        sentry_sentry       replicated          0/0                 sentry:9.1.1
-t641ktyu1xye        sentry_worker       replicated          0/0                 sentry:9.1.1
+```
+NAME      SERVICES   ORCHESTRATOR
+sentry    5          Swarm
+traefik   1          Swarm
+```
+
+```bash
+docker stack ps sentry
+```
+```
+ID             NAME                IMAGE                  NODE      DESIRED STATE   CURRENT STATE                ERROR     PORTS
+kaffi4dswgoc   sentry_postgres.1   postgres:10.4-alpine   infra01   Running         Running about a minute ago             
+p6ivf81mu3hk   sentry_redis.1      redis:4.0-alpine       infra01   Running         Running about a minute ago 
+```
+
+```bash
+docker service ls
+```
+```
+ID             NAME              MODE         REPLICAS   IMAGE                   PORTS
+6omti7eew58c   sentry_cron       replicated   0/0        sentry:9.1.1            
+37k1sawud7d2   sentry_postgres   replicated   1/1        postgres:10.4-alpine    
+c9cv5hi4rtyn   sentry_redis      replicated   1/1        redis:4.0-alpine        
+il4qrvuq3q1d   sentry_sentry     replicated   0/0        sentry:9.1.1            
+ukrcfahf5igh   sentry_worker     replicated   0/0        sentry:9.1.1            
+plgt5n3gy1qs   traefik_traefik   replicated   1/1        traefik:1.7.12-alpine   
 ```
 
 Wait images downloading...
@@ -175,18 +200,20 @@ t641ktyu1xye        sentry_worker       replicated          0/0                 
 
 Sentry Database initialization:
 
-```
-$ cat sentry/init.sql | docker exec -i $(./sentry/postgres-container-id.sh) psql -U sentry sentry
+```bash
+cat sentry/init.sql | docker exec -i $(./sentry/postgres-container-id.sh) psql -U sentry sentry
 ```
 
 Start Sentry:
 
 ```
-$ docker service scale sentry_sentry=1 sentry_cron=1 sentry_worker=1
+docker service scale sentry_sentry=1 sentry_cron=1 sentry_worker=1
 ```
 
+```bash
+docker stack ps sentry
 ```
-$ docker stack ps sentry
+```
 ID                  NAME                IMAGE                  NODE                DESIRED STATE       CURRENT STATE            ERROR                              PORTS
 jl8kicsg9y7c        sentry_worker.1     sentry:9.1.1           infra01             Running             Running 18 seconds ago
 xfzqeoe3i9zt        sentry_cron.1       sentry:9.1.1           infra01             Running             Running 18 seconds ago
@@ -205,34 +232,35 @@ yrv0j8kx95fs        sentry_sentry       replicated          1/1                 
 t641ktyu1xye        sentry_worker       replicated          1/1                 sentry:9.1.1
 ```
 
+```bash
+docker exec -it $(./sentry/sentry-container-id.sh) sentry upgrade
 ```
-$ docker exec -it $(./sentry/sentry-container-id.sh) sentry upgrade
-09:23:04 [WARNING] sentry.utils.geo: settings.GEOIP_PATH_MMDB not configured.
-09:23:08 [INFO] sentry.plugins.github: apps-not-configured
-Syncing...
-Creating tables ...
-Installing custom SQL ...
-Installing indexes ...
-Installed 0 object(s) from 0 fixture(s)
-Migrating...
-Running migrations for sentry:
-- Nothing to migrate.
+```
+13:31:21 [WARNING] sentry.utils.geo: settings.GEOIP_PATH_MMDB not configured.
 ...
+Migrated:
+ - sentry
+ - sentry.nodestore
+ - sentry.search
+ - social_auth
+ - sentry.tagstore
+ - sentry_plugins.hipchat_ac
  - sentry_plugins.jira_ac
 Creating missing DSNs
 Correcting Group.num_comments counter
-```
-
-Configure admin user:
 
 ```
-$ docker exec -it $(./sentry/sentry-container-id.sh) sentry createuser \
+
+### Configure admin user:
+
+```
+docker exec -it $(./sentry/sentry-container-id.sh) sentry createuser \
     --email admin@example.com \
     --password password \
     --superuser --no-input > /dev/null
 ```
 
-Go to http://infra01.example.com:9000/auth/login/sentry/ (`admin@example.com` / `password`)
+Go to http://sentry.example.com (`admin@example.com` / `password`)
 
 ## Destroy Sentry
 
