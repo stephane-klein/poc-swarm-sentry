@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define :infra01 do |server|
-    server.vm.box = "ubuntu/bionic64"
+    server.vm.box = "ubuntu/focal64"
     server.vm.hostname = "infra01"
     server.vm.synced_folder '.', '/vagrant/', disabled: false
     server.vm.network "private_network", type: "dhcp"
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
     server.vm.provision "shell", path: "install-docker.sh"
   end
   config.vm.define :infra02 do |server|
-    server.vm.box = "ubuntu/bionic64"
+    server.vm.box = "ubuntu/focal64"
     server.vm.hostname = "infra02"
     server.vm.synced_folder '.', '/vagrant/', disabled: false
     server.vm.network "private_network", type: "dhcp"

@@ -10,8 +10,8 @@ apt-get install -yq \
   ca-certificates \
   curl \
   gnupg2 \
-  python-pip \
-  python-minimal
+  python3-pip \
+  python3-minimal
 
 mkdir -p /etc/docker/
 
@@ -24,11 +24,11 @@ EOF
 
 # ** Install Docker
 # shellcheck disable=SC2024
-echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" > /etc/apt/sources.list.d/docker.list
+echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" > /etc/apt/sources.list.d/docker.list
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 apt-get update -y
 apt-get install -y docker-ce
-pip install docker-compose
+pip3 install docker-compose
 usermod -aG docker vagrant
 
 echo "Done"

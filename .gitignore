@@ -1,4 +1,4 @@
 .vagrant/
-ubuntu-bionic-18.04-cloudimg-console.log
+*.log
 swarm-token-worker
 sentry/dump.sql
